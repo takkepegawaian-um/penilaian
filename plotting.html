@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plotting Tim Penguji - Sistem Penilaian UM</title>
+  
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome 6 CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Select2 CSS & Select2 Bootstrap 5 Theme -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+
+  <style>
+    body {
+      background-color: #f4f6f9;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .page-header {
+      background: linear-gradient(135deg, #0d6efd 0%, #0a4b9c 100%);
+      color: white;
+      padding: 30px 0 50px 0;
+      border-bottom-left-radius: 24px;
+      border-bottom-right-radius: 24px;
+    }
+
+    .main-card {
+      border: none;
+      border-radius: 16px;
+      margin-top: -30px;
+    }
+
+    .btn-dt {
+      background-color: #f8f9fa;
+      color: #333;
+      border: 1px solid #ced4da;
+      padding: 5px 12px;
+      font-size: 0.875rem;
+      border-radius: 6px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: all 0.15s ease-in-out;
+    }
+
+    .btn-dt:hover {
+      background-color: #e9ecef;
+      color: #000;
+    }
+
+    /* Badge Fakultas Ringkas */
+    .badge-fakultas {
+      background-color: #f0f2f5;
+      color: #495057;
+      border: 1px solid #dee2e6;
+      font-weight: 600;
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 6px;
+      display: inline-block;
+    }
+
+    /* Penyesuaian Ukuran Font Select2 dalam Tabel */
+    .select2-container--bootstrap-5 .select2-selection {
+      font-size: 0.8rem !important;
+      min-height: 31px !important;
+      padding: 2px 6px !important;
+    }
+  </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+  <!-- ==================== HEADER BANNER ==================== -->
+  <section class="page-header shadow-sm">
+    <div class="container text-center">
+      <h3 class="fw-bold mb-1">Plotting Tim Penguji Seleksi</h3>
+      <p class="small opacity-75 mb-0">Pemetaan Tim Pewawancara & Penilai Praktik Mengajar Per Peserta</p>
+    </div>
+  </section>
+
+  <!-- ==================== MAIN CONTENT ==================== -->
+  <div class="container-fluid px-md-4 mb-5">
+    <div class="card main-card shadow-sm p-3 p-md-4">
+      <div class="card-body">
+
+        <!-- TOOLBAR / NAVIGATION -->
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <a href="home.html" class="btn-dt">
+              <i class="fa-solid fa-house"></i> Beranda
+            </a>
+          </div>
+
+          <div class="d-flex align-items-center gap-2">
+            <label for="inputSearch" class="mb-0 small fw-normal text-secondary">Cari :</label>
+            <input type="text" id="inputSearch" class="form-control form-control-sm" placeholder="Ketik nama / kode peserta..." style="width: 220px;">
+          </div>
+        </div>
+
+        <!-- FILTER DROPDOWN FORMASI -->
+        <div class="row mb-3">
+          <div class="col-md-4 col-lg-3">
+            <select class="form-select form-select-sm" id="filterFormasi">
+              <option value="">-- Semua Formasi / Fakultas --</option>
+              <option value="FT">FT</option>
+              <option value="FMIPA">FMIPA</option>
+              <option value="FIP">FIP</option>
+              <option value="FEB">FEB</option>
+              <option value="FS">FS</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- TABEL PLOTTING -->
+        <div class="table-responsive border rounded-3">
+          <table class="table table-hover align-middle small mb-0" id="tablePlotting">
+            <thead class="table-light align-middle text-center">
+              <tr>
+                <th style="width: 3%;">No</th>
+                <th style="width: 10%;" class="text-start">Kode Peserta</th>
+                <th style="width: 14%;" class="text-start">Nama Peserta</th>
+                <th style="width: 15%;" class="text-start">Penempatan</th>
+                <th style="width: 6%;">Fakultas</th>
+                <th style="width: 11.5%;">Pewawancara I</th>
+                <th style="width: 11.5%;">Pewawancara II</th>
+                <th style="width: 11.5%;">Penilai Mengajar I</th>
+                <th style="width: 11.5%;">Penilai Mengajar II</th>
+                <th style="width: 6%;">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+              <!-- BARIS 1 -->
+              <tr>
+                <td class="text-center">1</td>
+                <td><span class="fw-bold text-primary td-kode">2026-FT-001</span></td>
+                <td class="fw-semibold text-dark">Budi Santoso, M.Kom.</td>
+                <td><div class="fw-medium text-dark">Dosen Teknik Informatika</div></td>
+                <td class="text-center"><span class="badge-fakultas">FT</span></td>
+                <td>
+                  <select class="form-select select2-penguji">
+                    <option value="1" selected>Prof. Dr. Ir. Sutrisno, M.T.</option>
+                    <option value="2">Dr. Budi Wahyono, M.Kom.</option>
+                    <option value="3">Dr. Eng. Agus Rahmadi, S.T.</option>
+                    <option value="4">Dra. Endang Sri M., M.Pd.</option>
+                  </select>
+                </td>
+                <td>
+                  <select class="form-select select2-penguji">
+                    <option value="2" selected>Dr. Budi Wahyono, M.Kom.</option>
+                    <option value="1">Prof. Dr. Ir. Sutrisno, M.T.</option>
+                    <option value="3">Dr. Eng. Agus Rahmadi, S.T.</option>
+                    <option value="4">Dra. Endang Sri M., M.Pd.</option>
+                  </select>
+                </td>
+                <td>
+                  <select class="form-select select2-penguji">
+                    <option value="3" selected>Dr. Eng. Agus Rahmadi, S.T.</option>
+                    <option value="1">Prof. Dr. Ir. Sutrisno, M.T.</option>
+                    <option value="2">Dr. Budi Wahyono, M.Kom.</option>
+                    <option value="4">Dra. Endang Sri M., M.Pd.</option>
+                  </select>
+                </td>
+                <td>
+                  <select class="form-select select2-penguji">
+                    <option value="4" selected>Dra. Endang Sri M., M.Pd.</option>
+                    <option value="1">Prof. Dr. Ir. Sutrisno, M.T.</option>
+                    <option value="2">Dr. Budi Wahyono, M.Kom.</option>
+                    <option value="3">Dr. Eng. Agus Rahmadi, S.T.</option>
+                  </select>
+                </td>
+                <!-- Tombol Simpan Per Peserta di Ujung Kanan -->
+                <td class="text-center">
+                  <button class="btn btn-sm btn-primary px-2 py-1 btn-simpan-row">
+                    <i class="fa-solid fa-floppy-disk me-1"></i>
+                  </button>
+                </td>
+              </tr>
+
+              <!-- BARIS 2 -->
+              <tr>
+                <td class="text-center">2</td>
+                <td><span class="fw-bold text-primary td-kode">2026-FM-014</span></td>
+                <td class="fw-semibold text-dark">Siti Nurhaliza, M.Sc.</td>
+                <td><div class="fw-medium text-dark">Dosen Matematika</div></td>
+                <td class="text-center"><span class="badge-fakultas">FMIPA</span></td>
+                <td>
+                  <select class="form-select select2-penguji">
+                    <option value="" disabled>-- Pilih Pewawancara 1 --</option>
+                    <option value="1" selected>Prof. Dr. Ir. Sutrisno, M.T.</option>
+                    <option value="2">Dr. Budi Wahyono, M.Kom.</option>
+                  </select>
+                </td>
+                <td>
+                  <select class="form-select select2-penguji">
+                    <option value="" selected>-- Pilih Pewawancara 2 --</option>
+                    <option value="1">Prof. Dr. Ir. Sutrisno, M.T.</option>
+                    <option value="2">Dr. Budi Wahyono, M.Kom.</option>
+                  </select>
+                </td>
+                <td>
+                  <select class="form-select select2-penguji">
+                    <option value="3" selected>Dr. Eng. Agus Rahmadi, S.T.</option>
+                    <option value="4">Dra. Endang Sri M., M.Pd.</option>
+                  </select>
+                </td>
+                <td>
+                  <select class="form-select select2-penguji">
+                    <option value="4" selected>Dra. Endang Sri M., M.Pd.</option>
+                    <option value="3">Dr. Eng. Agus Rahmadi, S.T.</option>
+                  </select>
+                </td>
+                <!-- Tombol Simpan Per Peserta di Ujung Kanan -->
+                <td class="text-center">
+                  <button class="btn btn-sm btn-primary px-2 py-1 btn-simpan-row">
+                    <i class="fa-solid fa-floppy-disk me-1"></i>
+                  </button>
+                </td>
+              </tr>
+
+              <!-- BARIS 3 -->
+              <tr>
+                <td class="text-center">3</td>
+                <td><span class="fw-bold text-primary td-kode">2026-FI-008</span></td>
+                <td class="fw-semibold text-dark">Rian Hidayat, M.Pd.</td>
+                <td><div class="fw-medium text-dark">Dosen PGSD</div></td>
+                <td class="text-center"><span class="badge-fakultas">FIP</span></td>
+                <td>
+                  <select class="form-select select2-penguji">
+                    <option value="2" selected>Dr. Budi Wahyono, M.Kom.</option>
+                    <option value="1">Prof. Dr. Ir. Sutrisno, M.T.</option>
+                  </select>
+                </td>
+                <td>
+                  <select class="form-select select2-penguji">
+                    <option value="1" selected>Prof. Dr. Ir. Sutrisno, M.T.</option>
+                    <option value="2">Dr. Budi Wahyono, M.Kom.</option>
+                  </select>
+                </td>
+                <td>
+                  <select class="form-select select2-penguji">
+                    <option value="4" selected>Dra. Endang Sri M., M.Pd.</option>
+                    <option value="3">Dr. Eng. Agus Rahmadi, S.T.</option>
+                  </select>
+                </td>
+                <td>
+                  <select class="form-select select2-penguji">
+                    <option value="" selected>-- Pilih Penilai PM 2 --</option>
+                    <option value="3">Dr. Eng. Agus Rahmadi, S.T.</option>
+                    <option value="4">Dra. Endang Sri M., M.Pd.</option>
+                  </select>
+                </td>
+                <!-- Tombol Simpan Per Peserta di Ujung Kanan -->
+                <td class="text-center">
+                  <button class="btn btn-sm btn-primary px-2 py-1 btn-simpan-row">
+                    <i class="fa-solid fa-floppy-disk me-1"></i>
+                  </button>
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="bg-white border-top py-3 text-center text-secondary small mt-auto">
+    <div class="container">
+      <b>Sistem Penilaian Seleksi UM</b>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Select2 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+  <script>
+    $(document).ready(function() {
+      // Inisialisasi Select2 pada Dropdown Penguji
+      $('.select2-penguji').select2({
+        theme: 'bootstrap-5',
+        width: '100%',
+        placeholder: '-- Pilih Penguji --',
+        allowClear: true
+      });
+
+      // Event Simpan Per Peserta
+      $(document).on('click', '.btn-simpan-row', function() {
+        const row = $(this).closest('tr');
+        const kodePeserta = row.find('.td-kode').text();
+        
+        // Notifikasi Simpan
+        alert('Data plotting untuk peserta [' + kodePeserta + '] berhasil disimpan!');
+      });
+
+      // Live Search Tabel
+      $('#inputSearch').on('keyup', function() {
+        const value = $(this).val().toLowerCase();
+        $('#tablePlotting tbody tr').filter(function() {
+          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+        });
+      });
+
+      // Filter Formasi / Fakultas
+      $('#filterFormasi').on('change', function() {
+        const value = $(this).val().toLowerCase();
+        $('#tablePlotting tbody tr').filter(function() {
+          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

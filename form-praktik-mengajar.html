@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Form Penilaian Praktik Mengajar - UM</title>
+  
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome 6 CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    body {
+      background-color: #f4f6f9;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .page-header {
+      background: linear-gradient(135deg, #0d6efd 0%, #0a4b9c 100%);
+      color: white;
+      padding: 30px 0 50px 0;
+      border-bottom-left-radius: 24px;
+      border-bottom-right-radius: 24px;
+    }
+
+    .main-card {
+      border: none;
+      border-radius: 16px;
+      margin-top: -30px;
+    }
+
+    /* Styling Identitas Peserta Sejajar */
+    .identity-box {
+      background-color: #f8f9fa;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 18px 24px;
+    }
+
+    .identity-label {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #6c757d;
+      margin-bottom: 2px;
+    }
+
+    .identity-value {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #212529;
+    }
+
+    .table th {
+      background-color: #f8f9fa;
+      font-weight: 600;
+      color: #495057;
+    }
+
+    .score {
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .total-badge {
+      background: #eef2ff;
+      border: 1px solid #c7d2fe;
+      border-radius: 12px;
+      padding: 15px;
+    }
+
+    .total-score {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #0d6efd;
+    }
+
+    @media print {
+      body { background: #ffffff !important; }
+      .page-header { background: none !important; color: #000 !important; padding: 0 !important; }
+      .page-header .badge { display: none !important; }
+      .main-card { border: none !important; box-shadow: none !important; margin-top: 0 !important; }
+      .btn, hr, .no-print { display: none !important; }
+      textarea.form-control, select.form-select { border: 1px solid #000 !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== HEADER BANNER ==================== -->
+  <section class="page-header shadow-sm">
+    <div class="container text-center">
+      <h3 class="fw-bold mb-1">Form Penilaian Praktik Mengajar</h3>
+      <p class="small opacity-75 mb-0">Evaluasi Kemampuan & Kinerja Praktik Mengajar Peserta</p>
+    </div>
+  </section>
+
+  <!-- ==================== FORM CARD ==================== -->
+  <div class="container mb-5">
+    <div class="card main-card shadow-sm p-3 p-md-4">
+      <div class="card-body p-2 p-md-3">
+
+        <!-- Identitas Peserta & Status Kehadiran -->
+        <div class="identity-box mb-4">
+          <h6 class="fw-bold text-primary mb-3 border-bottom pb-2">
+            <i class="fa-solid fa-id-card me-1"></i> Identitas Peserta Seleksi
+          </h6>
+          <div class="row g-3">
+            <div class="col-md-3">
+              <span class="identity-label d-block">Nama Peserta Seleksi :</span>
+              <span class="identity-value d-block">Dummy Peserta</span>
+            </div>
+            <div class="col-md-3">
+              <span class="identity-label d-block">Kualifikasi Pendidikan :</span>
+              <span class="identity-value d-block">S2 Pendidikan Matematika</span>
+            </div>
+            <div class="col-md-3">
+              <span class="identity-label d-block">Penempatan :</span>
+              <span class="identity-value d-block">FMIPA</span>
+            </div>
+            <div class="col-md-3">
+              <span class="identity-label d-block">Penilai Mengajar I :</span>
+              <span class="identity-value d-block">Penilai I</span>
+            </div>
+          </div>
+
+          <!-- INPUT STATUS KEHADIRAN -->
+          <div class="row mt-3 pt-3 border-top align-items-center">
+            <div class="col-md-3">
+              <label for="statusKehadiran" class="fw-bold text-dark mb-0">
+                <i class="fa-solid fa-user-check me-1 text-primary"></i> Status Kehadiran :
+              </label>
+            </div>
+            <div class="col-md-4">
+              <select id="statusKehadiran" class="form-select form-select-sm fw-bold" onchange="cekKehadiran()">
+                <option value="Offline" selected>Offline</option>
+                <option value="Online">Online</option>
+                <option value="Tidak Hadir">Tidak Hadir</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabel Penilaian -->
+        <div class="table-responsive rounded-3 border mb-4">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="text-center align-middle">
+              <tr>
+                <th style="width: 5%;">No</th>
+                <th style="width: 55%;" class="text-start">Unsur Penilaian</th>
+                <th style="width: 8%;">1</th>
+                <th style="width: 8%;">2</th>
+                <th style="width: 8%;">3</th>
+                <th style="width: 8%;">4</th>
+                <th style="width: 8%;">5</th>
+              </tr>
+            </thead>
+            <tbody id="t"></tbody>
+          </table>
+        </div>
+
+        <!-- Ringkasan Nilai & Keterangan -->
+        <div class="row g-3 align-items-center">
+          <div class="col-md-7">
+            <div class="p-3 bg-light rounded-3 border small text-secondary">
+              <strong class="text-dark d-block mb-1"><i class="fa-solid fa-circle-info me-1"></i> Keterangan :</strong>
+              <ul class="mb-0 ps-3">
+                <li>Nilai maksimal untuk masing-masing unsur : <strong>5</strong></li>
+                <li>Jumlah minimal skor : <strong>5</strong> | Maksimal skor : <strong>25</strong></li>
+                <li>Jumlah ambang batas : <strong>12,5</strong></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="col-md-5">
+            <div class="total-badge text-end">
+              <span class="fs-6 fw-bold text-dark d-block mb-1">Total Skor Penilaian</span>
+              <div>
+                <span id="total" class="total-score">0</span>
+                <span class="text-muted fs-6">/ 25</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Catatan Opsional -->
+        <div class="mt-4">
+          <label for="catatan" class="form-label fw-bold text-dark">
+            <i class="fa-solid fa-pen-to-square me-1"></i> Catatan Penilai :
+          </label>
+          <textarea id="catatan" class="form-control rounded-3" rows="3" placeholder="Tambahkan catatan hasil observasi praktik mengajar di sini..."></textarea>
+        </div>
+
+        <hr class="my-4">
+
+        <!-- Tombol Aksi -->
+        <div class="d-flex justify-content-between align-items-center no-print">
+          <a href="javascript:history.back()" class="btn btn-outline-secondary px-3">
+            <i class="fa-solid fa-arrow-left me-1"></i> Kembali
+          </a>
+          <div>
+            <button class="btn btn-light me-2 border" onclick="location.reload()">
+              <i class="fa-solid fa-rotate me-1"></i> Reset
+            </button>
+            <button class="btn btn-primary px-4 fw-semibold" onclick="simpanData()">
+              <i class="fa-solid fa-floppy-disk me-1"></i> Simpan
+            </button>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+<script>
+  const u = [
+    "Kemampuan verbal (intonasi, pemilihan kata/diksi, kualitas suara)",
+    "Kemampuan menggunakan alat bantu mengajar termasuk RPS dan media pembelajaran",
+    "Kemampuan akademik (penguasaan materi)",
+    "Kemampuan Bahasa Asing/Inggris",
+    "Sikap dan penampilan di kelas"
+  ];
+
+  const tbody = document.getElementById("t");
+
+  u.forEach((x, i) => {
+    let r = `<tr><td class="text-center fw-bold text-muted">${i + 1}</td><td>${x}</td>`;
+    for (let j = 1; j <= 5; j++) {
+      r += `<td class="score"><input class="form-check-input score-radio" type="radio" name="n${i}" value="${j}" onchange="h()"></td>`;
+    }
+    r += "</tr>";
+    tbody.innerHTML += r;
+  });
+
+  // Fungsi Menghitung Total Skor
+  function h() {
+    let s = 0;
+    document.querySelectorAll(".score-radio:checked").forEach(e => s += +e.value);
+    document.getElementById("total").textContent = s;
+  }
+
+  // Fungsi Logika Status Kehadiran
+  function cekKehadiran() {
+    const status = document.getElementById("statusKehadiran").value;
+    const radios = document.querySelectorAll(".score-radio");
+
+    if (status === "Tidak Hadir") {
+      // Uncheck semua radio button & disable input
+      radios.forEach(r => {
+        r.checked = false;
+        r.disabled = true;
+      });
+      // Reset total skor ke 0
+      document.getElementById("total").textContent = 0;
+    } else {
+      // Enable kembali opsi jika Online atau Offline
+      radios.forEach(r => {
+        r.disabled = false;
+      });
+      h(); // Hitung kembali skor yang ter-pilih jika ada
+    }
+  }
+
+  function simpanData() {
+    window.print();
+  }
+</script>
+
+</body>
+</html>
