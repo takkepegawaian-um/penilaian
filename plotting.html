@@ -118,23 +118,21 @@
             <thead class="table-light align-middle text-center">
               <tr>
                 <th style="width: 3%;">No</th>
-                <th style="width: 7%;" class="text-start">Kode Peserta</th>
-                <th style="width: 10%;" class="text-start">Nama Peserta</th>
-                <th style="width: 8%;" class="text-start">Penempatan</th>
-                <th style="width: 4%;">Fakultas</th>
-                <th style="width: 8%;">Pewawancara I</th>
-                <th style="width: 8%;">Pewawancara II</th>
-                <th style="width: 7%;">Ruangan Wawancara</th>
-                <th style="width: 8%;">Waktu Wawancara</th>
-                <th style="width: 8%;">Penilai Mengajar I</th>
-                <th style="width: 8%;">Penilai Mengajar II</th>
-                <th style="width: 7%;">Ruangan Praktik Mengajar</th>
-                <th style="width: 8%;">Waktu Praktik Mengajar</th>
-                <th style="width: 4%;">Aksi</th>
+                <th style="width: 9%;" class="text-start">Kode Peserta</th>
+                <th style="width: 13%;" class="text-start">Nama Peserta</th>
+                <th style="width: 10%;" class="text-start">Penempatan</th>
+                <th style="width: 5%;">Fakultas</th>
+                <th style="width: 10%;">Pewawancara I</th>
+                <th style="width: 10%;">Pewawancara II</th>
+                <th style="width: 9%;">Ruangan Wawancara</th>
+                <th style="width: 10%;">Penilai Mengajar I</th>
+                <th style="width: 10%;">Penilai Mengajar II</th>
+                <th style="width: 9%;">Ruangan Praktik Mengajar</th>
+                <th style="width: 5%;">Aksi</th>
               </tr>
             </thead>
             <tbody id="tbodyPlotting">
-              <tr><td colspan="14" class="text-center text-muted py-4">Memuat data...</td></tr>
+              <tr><td colspan="12" class="text-center text-muted py-4">Memuat data...</td></tr>
             </tbody>
           </table>
         </div>
@@ -190,15 +188,13 @@
         const kodePeserta = row.data('kode');
 
         const ruanganWawancara = row.find('.sel-ruangan-wawancara').val();
-        const waktuWawancara = row.find('.inp-waktu-wawancara').val();
         const ruanganPraktik = row.find('.sel-ruangan-praktik').val();
-        const waktuPraktik = row.find('.inp-waktu-praktik').val();
 
         const slots = [
-          { jenis_sesi: 'Wawancara', urutan: 1, penguji_id: row.find('.sel-pewawancara-1').val(), ruangan_id: ruanganWawancara, waktu: waktuWawancara },
-          { jenis_sesi: 'Wawancara', urutan: 2, penguji_id: row.find('.sel-pewawancara-2').val(), ruangan_id: ruanganWawancara, waktu: waktuWawancara },
-          { jenis_sesi: 'Praktik Mengajar', urutan: 1, penguji_id: row.find('.sel-praktik-1').val(), ruangan_id: ruanganPraktik, waktu: waktuPraktik },
-          { jenis_sesi: 'Praktik Mengajar', urutan: 2, penguji_id: row.find('.sel-praktik-2').val(), ruangan_id: ruanganPraktik, waktu: waktuPraktik },
+          { jenis_sesi: 'Wawancara', urutan: 1, penguji_id: row.find('.sel-pewawancara-1').val(), ruangan_id: ruanganWawancara },
+          { jenis_sesi: 'Wawancara', urutan: 2, penguji_id: row.find('.sel-pewawancara-2').val(), ruangan_id: ruanganWawancara },
+          { jenis_sesi: 'Praktik Mengajar', urutan: 1, penguji_id: row.find('.sel-praktik-1').val(), ruangan_id: ruanganPraktik },
+          { jenis_sesi: 'Praktik Mengajar', urutan: 2, penguji_id: row.find('.sel-praktik-2').val(), ruangan_id: ruanganPraktik },
         ].filter(s => s.penguji_id); // slot kosong tidak diproses (tidak menghapus plotting lama)
 
         if (!slots.length) { alert('Pilih minimal satu penguji sebelum menyimpan.'); return; }
@@ -211,7 +207,6 @@
               urutan: s.urutan,
               penguji_id: parseInt(s.penguji_id, 10),
               ruangan_id: s.ruangan_id ? parseInt(s.ruangan_id, 10) : null,
-              waktu: s.waktu ? new Date(s.waktu).toISOString() : null,
             }, { onConflict: 'peserta_id,jenis_sesi,urutan' });
             if (error) throw error;
           }
@@ -240,12 +235,6 @@
       pengujiPraktik = data.filter(p => p.penguji_peran.some(r => r.peran === 'Penilai Praktik Mengajar'));
     }
 
-    function toDatetimeLocalValue(isoString) {
-      const d = new Date(isoString);
-      const pad = n => String(n).padStart(2, '0');
-      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-    }
-
     async function loadRuanganList() {
       const { data, error } = await db.from('ruangan').select('id, kode, nama_ruangan').order('nama_ruangan');
       if (error) { showDbError('memuat data ruangan', error); return; }
@@ -255,7 +244,7 @@
     async function loadPlotting() {
       let query = db
         .from('peserta')
-        .select('id, kode_peserta, nama, formasi_jabatan, fakultas(id, kode), penugasan(jenis_sesi, urutan, penguji_id, ruangan_id, waktu)')
+        .select('id, kode_peserta, nama, formasi_jabatan, fakultas(id, kode), penugasan(jenis_sesi, urutan, penguji_id, ruangan_id)')
         .order('kode_peserta');
       const fakultasId = $('#filterFormasi').val();
       if (fakultasId) query = query.eq('fakultas_id', fakultasId);
@@ -268,7 +257,7 @@
     function renderPlotting(rows) {
       const tbody = document.getElementById('tbodyPlotting');
       if (!rows.length) {
-        tbody.innerHTML = '<tr><td colspan="14" class="text-center text-muted py-4">Belum ada data peserta.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="12" class="text-center text-muted py-4">Belum ada data peserta.</td></tr>';
         return;
       }
 
@@ -279,10 +268,6 @@
       const cariRuangan = (penugasan, jenis) => {
         const pu = penugasan.find(p => p.jenis_sesi === jenis && p.ruangan_id);
         return pu ? pu.ruangan_id : '';
-      };
-      const cariWaktu = (penugasan, jenis) => {
-        const pu = penugasan.find(p => p.jenis_sesi === jenis && p.waktu);
-        return pu ? toDatetimeLocalValue(pu.waktu) : '';
       };
       const buildOptions = (list, selectedId) =>
         '<option value="">-- Pilih Penguji --</option>' +
@@ -297,9 +282,7 @@
         const pm1 = cariAssigned(r.penugasan, 'Praktik Mengajar', 1);
         const pm2 = cariAssigned(r.penugasan, 'Praktik Mengajar', 2);
         const ruanganWawancara = cariRuangan(r.penugasan, 'Wawancara');
-        const waktuWawancara = cariWaktu(r.penugasan, 'Wawancara');
         const ruanganPraktik = cariRuangan(r.penugasan, 'Praktik Mengajar');
-        const waktuPraktik = cariWaktu(r.penugasan, 'Praktik Mengajar');
 
         return `
         <tr data-id="${r.id}" data-kode="${escapeHtml(r.kode_peserta)}">
@@ -311,11 +294,9 @@
           <td><select class="form-select select2-penguji sel-pewawancara-1">${buildOptions(pengujiPewawancara, w1)}</select></td>
           <td><select class="form-select select2-penguji sel-pewawancara-2">${buildOptions(pengujiPewawancara, w2)}</select></td>
           <td><select class="form-select form-select-sm sel-ruangan-wawancara">${buildRuanganOptions(ruanganWawancara)}</select></td>
-          <td><input type="datetime-local" class="form-control form-control-sm inp-waktu-wawancara" value="${waktuWawancara}"></td>
           <td><select class="form-select select2-penguji sel-praktik-1">${buildOptions(pengujiPraktik, pm1)}</select></td>
           <td><select class="form-select select2-penguji sel-praktik-2">${buildOptions(pengujiPraktik, pm2)}</select></td>
           <td><select class="form-select form-select-sm sel-ruangan-praktik">${buildRuanganOptions(ruanganPraktik)}</select></td>
-          <td><input type="datetime-local" class="form-control form-control-sm inp-waktu-praktik" value="${waktuPraktik}"></td>
           <td class="text-center">
             <button class="btn btn-sm btn-primary px-2 py-1 btn-simpan-row">
               <i class="fa-solid fa-floppy-disk me-1"></i>
