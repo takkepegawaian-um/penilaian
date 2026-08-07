@@ -294,6 +294,7 @@
       let query = db
         .from('peserta')
         .select('id, kode_peserta, nama, formasi_jabatan, fakultas(id, kode), penugasan(jenis_sesi, urutan, penguji_id, ruangan_id)')
+        .order('fakultas_id')
         .order('kode_peserta');
       const fakultasId = $('#filterFormasi').val();
       if (fakultasId) query = query.eq('fakultas_id', fakultasId);
