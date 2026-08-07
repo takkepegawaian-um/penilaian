@@ -107,6 +107,7 @@
             <tbody id="tbodyRuangan">
               <tr><td colspan="8" class="text-center text-muted py-4">Memuat data...</td></tr>
             </tbody>
+            <tfoot id="tfootRuangan"></tfoot>
           </table>
         </div>
 
@@ -331,26 +332,42 @@
       const { data, error } = await db.from('ruangan').select('*').order('nama_ruangan');
       if (error) { showDbError('memuat data ruangan', error); return; }
 
-      const rekapRuangan = await hitungRekapRuangan();
-      renderRuangan(data, rekapRuangan);
+      const { rekap, totalGlobal } = await hitungRekapRuangan();
+      renderRuangan(data, rekap);
+      renderTotalRuangan(data.length ? totalGlobal : null);
     }
 
-    // Menghitung jumlah penguji unik per ruangan, dipecah per formasi, dari data penugasan
+    // Menghitung jumlah penguji unik per ruangan (dipecah per formasi) & total keseluruhan, dari data penugasan
     async function hitungRekapRuangan() {
       const { data, error } = await db
         .from('penugasan')
         .select('ruangan_id, jenis_sesi, penguji_id, peserta(formasi_jabatan)')
         .not('ruangan_id', 'is', null);
-      if (error) { showDbError('memuat data penugasan untuk rekap ruangan', error); return {}; }
+      if (error) { showDbError('memuat data penugasan untuk rekap ruangan', error); return { rekap: {}, totalGlobal: { Wawancara: new Set(), 'Praktik Mengajar': new Set() } }; }
 
       const rekap = {}; // { [ruangan_id]: { [formasi]: { Wawancara: Set, 'Praktik Mengajar': Set } } }
+      const totalGlobal = { Wawancara: new Set(), 'Praktik Mengajar': new Set() };
       data.forEach(p => {
         const formasi = (p.peserta && p.peserta.formasi_jabatan) || '(Formasi tidak diketahui)';
         if (!rekap[p.ruangan_id]) rekap[p.ruangan_id] = {};
         if (!rekap[p.ruangan_id][formasi]) rekap[p.ruangan_id][formasi] = { Wawancara: new Set(), 'Praktik Mengajar': new Set() };
         rekap[p.ruangan_id][formasi][p.jenis_sesi].add(p.penguji_id);
+        totalGlobal[p.jenis_sesi].add(p.penguji_id);
       });
-      return rekap;
+      return { rekap, totalGlobal };
+    }
+
+    function renderTotalRuangan(totalGlobal) {
+      const tfoot = document.getElementById('tfootRuangan');
+      if (!totalGlobal) { tfoot.innerHTML = ''; return; }
+      tfoot.innerHTML = `
+        <tr class="table-light fw-bold">
+          <td colspan="5" class="text-end">Total Keseluruhan Penguji Bertugas</td>
+          <td class="text-center"><span class="badge bg-primary-subtle text-primary border border-primary-subtle">${totalGlobal.Wawancara.size}</span></td>
+          <td class="text-center"><span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">${totalGlobal['Praktik Mengajar'].size}</span></td>
+          <td></td>
+        </tr>
+      `;
     }
 
     function renderRuangan(rows, rekapRuangan) {
