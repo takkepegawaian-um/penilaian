@@ -72,6 +72,17 @@
       min-height: 31px !important;
       padding: 2px 6px !important;
     }
+
+    .nav-tabs .nav-link {
+      color: #495057;
+      font-weight: 600;
+      border-radius: 8px 8px 0 0;
+    }
+
+    .nav-tabs .nav-link.active {
+      color: #0d6efd;
+      border-bottom-color: #fff;
+    }
   </style>
 </head>
 <body class="d-flex flex-column min-vh-100">
@@ -112,29 +123,70 @@
           </div>
         </div>
 
-        <!-- TABEL PLOTTING -->
-        <div class="table-responsive border rounded-3">
-          <table class="table table-hover align-middle small mb-0" id="tablePlotting">
-            <thead class="table-light align-middle text-center">
-              <tr>
-                <th style="width: 3%;">No</th>
-                <th style="width: 9%;" class="text-start">Kode Peserta</th>
-                <th style="width: 13%;" class="text-start">Nama Peserta</th>
-                <th style="width: 10%;" class="text-start">Penempatan</th>
-                <th style="width: 5%;">Fakultas</th>
-                <th style="width: 10%;">Pewawancara I</th>
-                <th style="width: 10%;">Pewawancara II</th>
-                <th style="width: 9%;">Ruangan Wawancara</th>
-                <th style="width: 10%;">Penilai Mengajar I</th>
-                <th style="width: 10%;">Penilai Mengajar II</th>
-                <th style="width: 9%;">Ruangan Praktik Mengajar</th>
-                <th style="width: 5%;">Aksi</th>
-              </tr>
-            </thead>
-            <tbody id="tbodyPlotting">
-              <tr><td colspan="12" class="text-center text-muted py-4">Memuat data...</td></tr>
-            </tbody>
-          </table>
+        <!-- TAB SESI -->
+        <ul class="nav nav-tabs mb-3" id="sesiTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="wawancara-tab" data-bs-toggle="tab" data-bs-target="#wawancara-pane" type="button" role="tab">
+              <i class="fa-solid fa-comments me-2 text-primary"></i>Sesi Wawancara
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="praktik-tab" data-bs-toggle="tab" data-bs-target="#praktik-pane" type="button" role="tab">
+              <i class="fa-solid fa-chalkboard-user me-2 text-warning-emphasis"></i>Sesi Praktik Mengajar
+            </button>
+          </li>
+        </ul>
+
+        <div class="tab-content" id="sesiTabContent">
+
+          <!-- TAB 1: WAWANCARA -->
+          <div class="tab-pane fade show active" id="wawancara-pane" role="tabpanel">
+            <div class="table-responsive border rounded-3">
+              <table class="table table-hover align-middle small mb-0" id="tableWawancaraPlot">
+                <thead class="table-light align-middle text-center">
+                  <tr>
+                    <th style="width: 4%;">No</th>
+                    <th style="width: 10%;" class="text-start">Kode Peserta</th>
+                    <th style="width: 18%;" class="text-start">Nama Peserta</th>
+                    <th style="width: 16%;" class="text-start">Penempatan</th>
+                    <th style="width: 6%;">Fakultas</th>
+                    <th style="width: 16%;">Pewawancara I</th>
+                    <th style="width: 16%;">Pewawancara II</th>
+                    <th style="width: 10%;">Ruangan</th>
+                    <th style="width: 4%;">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="tbodyWawancaraPlot">
+                  <tr><td colspan="9" class="text-center text-muted py-4">Memuat data...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TAB 2: PRAKTIK MENGAJAR -->
+          <div class="tab-pane fade" id="praktik-pane" role="tabpanel">
+            <div class="table-responsive border rounded-3">
+              <table class="table table-hover align-middle small mb-0" id="tablePraktikPlot">
+                <thead class="table-light align-middle text-center">
+                  <tr>
+                    <th style="width: 4%;">No</th>
+                    <th style="width: 10%;" class="text-start">Kode Peserta</th>
+                    <th style="width: 18%;" class="text-start">Nama Peserta</th>
+                    <th style="width: 16%;" class="text-start">Penempatan</th>
+                    <th style="width: 6%;">Fakultas</th>
+                    <th style="width: 16%;">Penilai Mengajar I</th>
+                    <th style="width: 16%;">Penilai Mengajar II</th>
+                    <th style="width: 10%;">Ruangan</th>
+                    <th style="width: 4%;">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="tbodyPraktikPlot">
+                  <tr><td colspan="9" class="text-center text-muted py-4">Memuat data...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
         </div>
 
       </div>
@@ -173,28 +225,25 @@
       // Filter Fakultas -> query ulang
       $('#filterFormasi').on('change', loadPlotting);
 
-      // Live Search Tabel
+      // Live Search Tabel (berlaku untuk kedua tab)
       $('#inputSearch').on('keyup', function() {
         const value = $(this).val().toLowerCase();
-        $('#tablePlotting tbody tr').filter(function() {
+        $('#tableWawancaraPlot tbody tr, #tablePraktikPlot tbody tr').filter(function() {
           $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
         });
       });
 
-      // Event Simpan Per Peserta
+      // Event Simpan Per Peserta (per tab/jenis sesi)
       $(document).on('click', '.btn-simpan-row', async function() {
         const row = $(this).closest('tr');
         const pesertaId = row.data('id');
         const kodePeserta = row.data('kode');
-
-        const ruanganWawancara = row.find('.sel-ruangan-wawancara').val();
-        const ruanganPraktik = row.find('.sel-ruangan-praktik').val();
+        const jenisSesi = row.data('jenis');
+        const ruanganId = row.find('.sel-ruangan').val();
 
         const slots = [
-          { jenis_sesi: 'Wawancara', urutan: 1, penguji_id: row.find('.sel-pewawancara-1').val(), ruangan_id: ruanganWawancara },
-          { jenis_sesi: 'Wawancara', urutan: 2, penguji_id: row.find('.sel-pewawancara-2').val(), ruangan_id: ruanganWawancara },
-          { jenis_sesi: 'Praktik Mengajar', urutan: 1, penguji_id: row.find('.sel-praktik-1').val(), ruangan_id: ruanganPraktik },
-          { jenis_sesi: 'Praktik Mengajar', urutan: 2, penguji_id: row.find('.sel-praktik-2').val(), ruangan_id: ruanganPraktik },
+          { urutan: 1, penguji_id: row.find('.sel-penguji-1').val() },
+          { urutan: 2, penguji_id: row.find('.sel-penguji-2').val() },
         ].filter(s => s.penguji_id); // slot kosong tidak diproses (tidak menghapus plotting lama)
 
         if (!slots.length) { alert('Pilih minimal satu penguji sebelum menyimpan.'); return; }
@@ -203,14 +252,14 @@
           for (const s of slots) {
             const { error } = await db.from('penugasan').upsert({
               peserta_id: pesertaId,
-              jenis_sesi: s.jenis_sesi,
+              jenis_sesi: jenisSesi,
               urutan: s.urutan,
               penguji_id: parseInt(s.penguji_id, 10),
-              ruangan_id: s.ruangan_id ? parseInt(s.ruangan_id, 10) : null,
+              ruangan_id: ruanganId ? parseInt(ruanganId, 10) : null,
             }, { onConflict: 'peserta_id,jenis_sesi,urutan' });
             if (error) throw error;
           }
-          alert('Data plotting untuk peserta [' + kodePeserta + '] berhasil disimpan!');
+          alert('Data plotting ' + jenisSesi + ' untuk peserta [' + kodePeserta + '] berhasil disimpan!');
         } catch (err) {
           showDbError('menyimpan plotting', err);
         }
@@ -254,56 +303,65 @@
       renderPlotting(data);
     }
 
+    function cariAssigned(penugasan, jenis, urutan) {
+      const pu = penugasan.find(p => p.jenis_sesi === jenis && p.urutan === urutan);
+      return pu ? pu.penguji_id : '';
+    }
+    function cariRuangan(penugasan, jenis) {
+      const pu = penugasan.find(p => p.jenis_sesi === jenis && p.ruangan_id);
+      return pu ? pu.ruangan_id : '';
+    }
+    function buildOptions(list, selectedId) {
+      return '<option value="">-- Pilih Penguji --</option>' +
+        list.map(p => `<option value="${p.id}" ${String(p.id) === String(selectedId) ? 'selected' : ''}>${escapeHtml(p.nama)}</option>`).join('');
+    }
+    function buildRuanganOptions(selectedId) {
+      return '<option value="">-- Ruangan --</option>' +
+        daftarRuangan.map(r => `<option value="${r.id}" ${String(r.id) === String(selectedId) ? 'selected' : ''}>${escapeHtml(r.kode || r.nama_ruangan)}</option>`).join('');
+    }
+
+    function renderBarisSesi(r, i, jenis, pengujiList, u1, u2, ruanganId) {
+      return `
+      <tr data-id="${r.id}" data-kode="${escapeHtml(r.kode_peserta)}" data-jenis="${jenis}">
+        <td class="text-center">${i + 1}</td>
+        <td><span class="fw-bold text-primary td-kode">${escapeHtml(r.kode_peserta)}</span></td>
+        <td class="fw-semibold text-dark">${escapeHtml(r.nama)}</td>
+        <td><div class="fw-medium text-dark">${escapeHtml(r.formasi_jabatan)}</div></td>
+        <td class="text-center"><span class="badge-fakultas">${escapeHtml(r.fakultas ? r.fakultas.kode : '-')}</span></td>
+        <td><select class="form-select select2-penguji sel-penguji-1">${buildOptions(pengujiList, u1)}</select></td>
+        <td><select class="form-select select2-penguji sel-penguji-2">${buildOptions(pengujiList, u2)}</select></td>
+        <td><select class="form-select form-select-sm sel-ruangan">${buildRuanganOptions(ruanganId)}</select></td>
+        <td class="text-center">
+          <button class="btn btn-sm btn-primary px-2 py-1 btn-simpan-row">
+            <i class="fa-solid fa-floppy-disk me-1"></i>
+          </button>
+        </td>
+      </tr>`;
+    }
+
     function renderPlotting(rows) {
-      const tbody = document.getElementById('tbodyPlotting');
+      const tbodyWawancara = document.getElementById('tbodyWawancaraPlot');
+      const tbodyPraktik = document.getElementById('tbodyPraktikPlot');
+
       if (!rows.length) {
-        tbody.innerHTML = '<tr><td colspan="12" class="text-center text-muted py-4">Belum ada data peserta.</td></tr>';
+        tbodyWawancara.innerHTML = '<tr><td colspan="9" class="text-center text-muted py-4">Belum ada data peserta.</td></tr>';
+        tbodyPraktik.innerHTML = '<tr><td colspan="9" class="text-center text-muted py-4">Belum ada data peserta.</td></tr>';
         return;
       }
 
-      const cariAssigned = (penugasan, jenis, urutan) => {
-        const pu = penugasan.find(p => p.jenis_sesi === jenis && p.urutan === urutan);
-        return pu ? pu.penguji_id : '';
-      };
-      const cariRuangan = (penugasan, jenis) => {
-        const pu = penugasan.find(p => p.jenis_sesi === jenis && p.ruangan_id);
-        return pu ? pu.ruangan_id : '';
-      };
-      const buildOptions = (list, selectedId) =>
-        '<option value="">-- Pilih Penguji --</option>' +
-        list.map(p => `<option value="${p.id}" ${String(p.id) === String(selectedId) ? 'selected' : ''}>${escapeHtml(p.nama)}</option>`).join('');
-      const buildRuanganOptions = (selectedId) =>
-        '<option value="">-- Ruangan --</option>' +
-        daftarRuangan.map(r => `<option value="${r.id}" ${String(r.id) === String(selectedId) ? 'selected' : ''}>${escapeHtml(r.kode || r.nama_ruangan)}</option>`).join('');
+      tbodyWawancara.innerHTML = rows.map((r, i) => renderBarisSesi(
+        r, i, 'Wawancara', pengujiPewawancara,
+        cariAssigned(r.penugasan, 'Wawancara', 1),
+        cariAssigned(r.penugasan, 'Wawancara', 2),
+        cariRuangan(r.penugasan, 'Wawancara')
+      )).join('');
 
-      tbody.innerHTML = rows.map((r, i) => {
-        const w1 = cariAssigned(r.penugasan, 'Wawancara', 1);
-        const w2 = cariAssigned(r.penugasan, 'Wawancara', 2);
-        const pm1 = cariAssigned(r.penugasan, 'Praktik Mengajar', 1);
-        const pm2 = cariAssigned(r.penugasan, 'Praktik Mengajar', 2);
-        const ruanganWawancara = cariRuangan(r.penugasan, 'Wawancara');
-        const ruanganPraktik = cariRuangan(r.penugasan, 'Praktik Mengajar');
-
-        return `
-        <tr data-id="${r.id}" data-kode="${escapeHtml(r.kode_peserta)}">
-          <td class="text-center">${i + 1}</td>
-          <td><span class="fw-bold text-primary td-kode">${escapeHtml(r.kode_peserta)}</span></td>
-          <td class="fw-semibold text-dark">${escapeHtml(r.nama)}</td>
-          <td><div class="fw-medium text-dark">${escapeHtml(r.formasi_jabatan)}</div></td>
-          <td class="text-center"><span class="badge-fakultas">${escapeHtml(r.fakultas ? r.fakultas.kode : '-')}</span></td>
-          <td><select class="form-select select2-penguji sel-pewawancara-1">${buildOptions(pengujiPewawancara, w1)}</select></td>
-          <td><select class="form-select select2-penguji sel-pewawancara-2">${buildOptions(pengujiPewawancara, w2)}</select></td>
-          <td><select class="form-select form-select-sm sel-ruangan-wawancara">${buildRuanganOptions(ruanganWawancara)}</select></td>
-          <td><select class="form-select select2-penguji sel-praktik-1">${buildOptions(pengujiPraktik, pm1)}</select></td>
-          <td><select class="form-select select2-penguji sel-praktik-2">${buildOptions(pengujiPraktik, pm2)}</select></td>
-          <td><select class="form-select form-select-sm sel-ruangan-praktik">${buildRuanganOptions(ruanganPraktik)}</select></td>
-          <td class="text-center">
-            <button class="btn btn-sm btn-primary px-2 py-1 btn-simpan-row">
-              <i class="fa-solid fa-floppy-disk me-1"></i>
-            </button>
-          </td>
-        </tr>`;
-      }).join('');
+      tbodyPraktik.innerHTML = rows.map((r, i) => renderBarisSesi(
+        r, i, 'Praktik Mengajar', pengujiPraktik,
+        cariAssigned(r.penugasan, 'Praktik Mengajar', 1),
+        cariAssigned(r.penugasan, 'Praktik Mengajar', 2),
+        cariRuangan(r.penugasan, 'Praktik Mengajar')
+      )).join('');
 
       $('.select2-penguji').select2({
         theme: 'bootstrap-5',
