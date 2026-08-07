@@ -194,17 +194,10 @@
                 <option value="Asisten Ahli">Asisten Ahli</option>
               </select>
             </div>
-            <div class="mb-3">
-              <label class="form-label fw-semibold">Penugasan Peran Penguji</label>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="addRoleWawancara" checked>
-                <label class="form-check-label" for="addRoleWawancara">Tim Pewawancara</label>
-              </div>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="addRolePraktik">
-                <label class="form-check-label" for="addRolePraktik">Penilai Praktik Mengajar</label>
-              </div>
-            </div>
+            <p class="text-muted small mb-0">
+              <i class="fa-solid fa-circle-info me-1"></i>
+              Peran (Pewawancara / Penilai Praktik Mengajar) tidak perlu ditentukan di sini — otomatis mengikuti penugasan dosen ini di halaman Plotting.
+            </p>
           </div>
           <div class="modal-footer bg-light">
             <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -242,17 +235,10 @@
                 <option value="Asisten Ahli">Asisten Ahli</option>
               </select>
             </div>
-            <div class="mb-3">
-              <label class="form-label fw-semibold">Penugasan Peran Penguji</label>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="editRoleWawancara">
-                <label class="form-check-label" for="editRoleWawancara">Tim Pewawancara</label>
-              </div>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="editRolePraktik">
-                <label class="form-check-label" for="editRolePraktik">Penilai Praktik Mengajar</label>
-              </div>
-            </div>
+            <p class="text-muted small mb-0">
+              <i class="fa-solid fa-circle-info me-1"></i>
+              Peran (Pewawancara / Penilai Praktik Mengajar) tidak perlu ditentukan di sini — otomatis mengikuti penugasan dosen ini di halaman Plotting.
+            </p>
           </div>
           <div class="modal-footer bg-light">
             <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -285,12 +271,11 @@
                   <th>NIP</th>
                   <th>Nama</th>
                   <th>Jabatan Fungsional</th>
-                  <th>Peran</th>
                   <th>Status</th>
                 </tr>
               </thead>
               <tbody id="tbodyImportPengujiPreview">
-                <tr><td colspan="6" class="text-center text-muted py-3">Pilih file Excel untuk melihat pratinjau.</td></tr>
+                <tr><td colspan="5" class="text-center text-muted py-3">Pilih file Excel untuk melihat pratinjau.</td></tr>
               </tbody>
             </table>
           </div>
@@ -346,8 +331,6 @@
         $('#editNip').val(row.find('.td-nip').text().trim());
         $('#editNama').val(row.find('.td-nama').text().trim());
         $('#editJafung').val(row.find('.td-jafung').text().trim());
-        $('#editRoleWawancara').prop('checked', row.data('peran-wawancara') === true || row.data('peran-wawancara') === 'true');
-        $('#editRolePraktik').prop('checked', row.data('peran-praktik') === true || row.data('peran-praktik') === 'true');
 
         $('#modalEditDosen').modal('show');
       });
@@ -356,20 +339,12 @@
       $('#formTambahDosen').on('submit', async function(e) {
         e.preventDefault();
         try {
-          const { data: penguji, error: errPenguji } = await db.from('penguji').insert({
+          const { error: errPenguji } = await db.from('penguji').insert({
             nip: $('#tambahNip').val().trim(),
             nama: $('#tambahNamaDosen').val().trim(),
             jabatan_fungsional: $('#tambahJafung').val(),
-          }).select('id').single();
+          });
           if (errPenguji) throw errPenguji;
-
-          const peran = [];
-          if ($('#addRoleWawancara').is(':checked')) peran.push({ penguji_id: penguji.id, peran: 'Pewawancara' });
-          if ($('#addRolePraktik').is(':checked')) peran.push({ penguji_id: penguji.id, peran: 'Penilai Praktik Mengajar' });
-          if (peran.length) {
-            const { error: errPeran } = await db.from('penguji_peran').insert(peran);
-            if (errPeran) throw errPeran;
-          }
 
           alert('Dosen penguji baru berhasil ditambahkan!');
           bootstrap.Modal.getInstance(document.getElementById('modalTambahDosen')).hide();
@@ -390,18 +365,6 @@
             jabatan_fungsional: $('#editJafung').val(),
           }).eq('id', currentEditId);
           if (errUpdate) throw errUpdate;
-
-          // Selaraskan peran: hapus semua lalu tulis ulang sesuai checkbox
-          const { error: errDelete } = await db.from('penguji_peran').delete().eq('penguji_id', currentEditId);
-          if (errDelete) throw errDelete;
-
-          const peran = [];
-          if ($('#editRoleWawancara').is(':checked')) peran.push({ penguji_id: currentEditId, peran: 'Pewawancara' });
-          if ($('#editRolePraktik').is(':checked')) peran.push({ penguji_id: currentEditId, peran: 'Penilai Praktik Mengajar' });
-          if (peran.length) {
-            const { error: errInsert } = await db.from('penguji_peran').insert(peran);
-            if (errInsert) throw errInsert;
-          }
 
           alert('Data dosen penguji berhasil diperbarui!');
           $('#modalEditDosen').modal('hide');
@@ -440,36 +403,43 @@
     async function loadPenguji() {
       const { data, error } = await db
         .from('penguji')
-        .select('id, nip, nama, jabatan_fungsional, penguji_peran(peran)')
+        .select('id, nip, nama, jabatan_fungsional')
         .order('nama');
-
       if (error) { showDbError('memuat data dosen penguji', error); return; }
 
-      const pewawancara = data.filter(p => p.penguji_peran.some(r => r.peran === 'Pewawancara'));
-      const penilaiPraktik = data.filter(p => p.penguji_peran.some(r => r.peran === 'Penilai Praktik Mengajar'));
+      const { data: penugasan, error: errPenugasan } = await db
+        .from('penugasan')
+        .select('penguji_id, jenis_sesi');
+      if (errPenugasan) { showDbError('memuat data plotting untuk peran dosen', errPenugasan); return; }
 
-      renderDosen('tbodyWawancara', pewawancara, 'Pewawancara', 'bg-primary-subtle text-primary border-primary-subtle');
-      renderDosen('tbodyPraktik', penilaiPraktik, 'Penilai Praktik Mengajar', 'bg-warning-subtle text-warning-emphasis border-warning-subtle');
+      // Peran dosen dihitung dari plotting: siapa saja yang pernah ditugaskan di sesi Wawancara / Praktik Mengajar
+      const wawancaraIds = new Set(penugasan.filter(p => p.jenis_sesi === 'Wawancara').map(p => p.penguji_id));
+      const praktikIds = new Set(penugasan.filter(p => p.jenis_sesi === 'Praktik Mengajar').map(p => p.penguji_id));
+
+      const pewawancara = data.filter(p => wawancaraIds.has(p.id));
+      const penilaiPraktik = data.filter(p => praktikIds.has(p.id));
+
+      renderDosen('tbodyWawancara', pewawancara, wawancaraIds, praktikIds);
+      renderDosen('tbodyPraktik', penilaiPraktik, wawancaraIds, praktikIds);
     }
 
-    function renderDosen(tbodyId, rows, labelPeran, badgeClass) {
+    function renderDosen(tbodyId, rows, wawancaraIds, praktikIds) {
       const tbody = document.getElementById(tbodyId);
       if (!rows.length) {
-        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">Belum ada dosen dengan peran ini.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">Belum ada dosen yang diplot pada sesi ini. Atur di halaman Plotting.</td></tr>';
         return;
       }
       tbody.innerHTML = rows.map((p, i) => {
-        const isWawancara = p.penguji_peran.some(r => r.peran === 'Pewawancara');
-        const isPraktik = p.penguji_peran.some(r => r.peran === 'Penilai Praktik Mengajar');
+        const badges = [];
+        if (wawancaraIds.has(p.id)) badges.push('<span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1">Pewawancara</span>');
+        if (praktikIds.has(p.id)) badges.push('<span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1">Penilai Praktik Mengajar</span>');
         return `
-        <tr data-id="${p.id}" data-peran-wawancara="${isWawancara}" data-peran-praktik="${isPraktik}">
+        <tr data-id="${p.id}">
           <td class="text-center">${i + 1}</td>
           <td class="fw-bold td-nip">${escapeHtml(p.nip)}</td>
           <td class="fw-semibold text-dark td-nama">${escapeHtml(p.nama)}</td>
           <td class="td-jafung">${escapeHtml(p.jabatan_fungsional)}</td>
-          <td class="text-center">
-            <span class="badge ${badgeClass} border px-2 py-1">${labelPeran}</span>
-          </td>
+          <td class="text-center">${badges.join(' ')}</td>
           <td class="text-center">
             <button class="btn btn-sm btn-outline-primary border-0 btn-edit-dosen" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
             <button class="btn btn-sm btn-outline-danger border-0 btn-hapus-dosen" title="Hapus"><i class="fa-solid fa-trash"></i></button>
@@ -484,8 +454,6 @@
       'nip': 'nip',
       'nama lengkap (beserta gelar)': 'nama',
       'jabatan fungsional': 'jabatan_fungsional',
-      'peran pewawancara (ya/tidak)': 'peran_pewawancara',
-      'peran penilai praktik mengajar (ya/tidak)': 'peran_praktik',
     };
 
     async function prosesFileImportPenguji(file) {
@@ -532,17 +500,13 @@
       if (!row.nama) errors.push('Nama kosong');
       if (!JAFUNG_VALID.includes(row.jabatan_fungsional)) errors.push('Jabatan Fungsional tidak valid');
 
-      const pewawancara = String(row.peran_pewawancara || '').trim().toLowerCase() === 'ya';
-      const praktik = String(row.peran_praktik || '').trim().toLowerCase() === 'ya';
-      if (!pewawancara && !praktik) errors.push('Pilih minimal satu peran (Ya pada salah satu kolom)');
-
-      return { ...row, peranList: [pewawancara && 'Pewawancara', praktik && 'Penilai Praktik Mengajar'].filter(Boolean), errors };
+      return { ...row, errors };
     }
 
     function renderPreviewImportPenguji() {
       const tbody = document.getElementById('tbodyImportPengujiPreview');
       if (!importPengujiRows.length) {
-        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-3">Tidak ada baris data yang terdeteksi.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">Tidak ada baris data yang terdeteksi.</td></tr>';
         $('#importPengujiSummary').html('<span class="text-muted">Tidak ada baris data untuk diimpor (isi dulu template mulai baris 6).</span>');
         $('#btnKonfirmasiImportPenguji').prop('disabled', true);
         return;
@@ -554,7 +518,6 @@
           <td>${escapeHtml(r.nip || '-')}</td>
           <td>${escapeHtml(r.nama || '-')}</td>
           <td>${escapeHtml(r.jabatan_fungsional || '-')}</td>
-          <td>${escapeHtml(r.peranList.join(', ') || '-')}</td>
           <td>${r.errors.length
             ? `<span class="badge bg-danger-subtle text-danger border border-danger-subtle" title="${escapeHtml(r.errors.join('; '))}"><i class="fa-solid fa-circle-xmark me-1"></i>${escapeHtml(r.errors.join(', '))}</span>`
             : '<span class="badge bg-success-subtle text-success border border-success-subtle"><i class="fa-solid fa-circle-check me-1"></i>Valid</span>'}
@@ -581,22 +544,13 @@
       let sukses = 0;
       const gagal = [];
       for (const r of validRows) {
-        try {
-          const { data: penguji, error: errPenguji } = await db.from('penguji').insert({
-            nip: r.nip,
-            nama: r.nama,
-            jabatan_fungsional: r.jabatan_fungsional,
-          }).select('id').single();
-          if (errPenguji) throw errPenguji;
-
-          const peran = r.peranList.map(p => ({ penguji_id: penguji.id, peran: p }));
-          const { error: errPeran } = await db.from('penguji_peran').insert(peran);
-          if (errPeran) throw errPeran;
-
-          sukses++;
-        } catch (err) {
-          gagal.push(`Baris ${r._baris} (${r.nip}): ${err.message}`);
-        }
+        const { error: errPenguji } = await db.from('penguji').insert({
+          nip: r.nip,
+          nama: r.nama,
+          jabatan_fungsional: r.jabatan_fungsional,
+        });
+        if (errPenguji) gagal.push(`Baris ${r._baris} (${r.nip}): ${errPenguji.message}`);
+        else sukses++;
       }
 
       $btn.html('<i class="fa-solid fa-upload me-1"></i> Import Data Valid');

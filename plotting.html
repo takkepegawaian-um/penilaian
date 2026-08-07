@@ -210,8 +210,7 @@
   <script src="assets/supabase-client.js"></script>
 
   <script>
-    let pengujiPewawancara = [];
-    let pengujiPraktik = [];
+    let semuaPenguji = [];
     let daftarRuangan = [];
 
     $(document).ready(async function() {
@@ -277,11 +276,11 @@
     async function loadPengujiLists() {
       const { data, error } = await db
         .from('penguji')
-        .select('id, nama, penguji_peran(peran)')
+        .select('id, nama')
         .order('nama');
       if (error) { showDbError('memuat data penguji', error); return; }
-      pengujiPewawancara = data.filter(p => p.penguji_peran.some(r => r.peran === 'Pewawancara'));
-      pengujiPraktik = data.filter(p => p.penguji_peran.some(r => r.peran === 'Penilai Praktik Mengajar'));
+      // Semua dosen bisa dipilih untuk peran manapun (Pewawancara maupun Penilai Praktik Mengajar) — fleksibel, tidak dibatasi peran tetap.
+      semuaPenguji = data;
     }
 
     async function loadRuanganList() {
@@ -351,14 +350,14 @@
       }
 
       tbodyWawancara.innerHTML = rows.map((r, i) => renderBarisSesi(
-        r, i, 'Wawancara', pengujiPewawancara,
+        r, i, 'Wawancara', semuaPenguji,
         cariAssigned(r.penugasan, 'Wawancara', 1),
         cariAssigned(r.penugasan, 'Wawancara', 2),
         cariRuangan(r.penugasan, 'Wawancara')
       )).join('');
 
       tbodyPraktik.innerHTML = rows.map((r, i) => renderBarisSesi(
-        r, i, 'Praktik Mengajar', pengujiPraktik,
+        r, i, 'Praktik Mengajar', semuaPenguji,
         cariAssigned(r.penugasan, 'Praktik Mengajar', 1),
         cariAssigned(r.penugasan, 'Praktik Mengajar', 2),
         cariRuangan(r.penugasan, 'Praktik Mengajar')
