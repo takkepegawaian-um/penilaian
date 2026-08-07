@@ -330,7 +330,7 @@
         <td class="text-center"><span class="badge-fakultas">${escapeHtml(r.fakultas ? r.fakultas.kode : '-')}</span></td>
         <td><select class="form-select select2-penguji sel-penguji-1">${buildOptions(pengujiList, u1)}</select></td>
         <td><select class="form-select select2-penguji sel-penguji-2">${buildOptions(pengujiList, u2)}</select></td>
-        <td><select class="form-select form-select-sm sel-ruangan">${buildRuanganOptions(ruanganId)}</select></td>
+        <td><select class="form-select select2-ruangan sel-ruangan">${buildRuanganOptions(ruanganId)}</select></td>
         <td class="text-center">
           <button class="btn btn-sm btn-primary px-2 py-1 btn-simpan-row">
             <i class="fa-solid fa-floppy-disk me-1"></i>
@@ -367,6 +367,13 @@
         theme: 'bootstrap-5',
         width: '100%',
         placeholder: '-- Pilih Penguji --',
+        allowClear: true
+      });
+
+      $('.select2-ruangan').select2({
+        theme: 'bootstrap-5',
+        width: '100%',
+        placeholder: '-- Ruangan --',
         allowClear: true
       });
     }
