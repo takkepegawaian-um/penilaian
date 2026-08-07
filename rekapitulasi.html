@@ -80,7 +80,7 @@
 
         <!-- BARIS TOMBOL TOOLBAR (SESUAI GAMBAR) -->
         <div class="d-flex flex-wrap gap-2 mb-3 no-print">
-          <a href="home.html" class="btn-toolbar-custom">
+          <a href="index.html" class="btn-toolbar-custom">
             <i class="fa-solid fa-house"></i> Beranda
           </a>
           <button class="btn-toolbar-custom" onclick="alert('Data berhasil disalin!')">
@@ -105,9 +105,6 @@
           <div class="col-md-6 col-lg-4">
             <select class="form-select form-select-sm" id="filterFormasi">
               <option value="">-- Semua Formasi --</option>
-              <option value="Dosen Teknik Informatika">Dosen Teknik Informatika</option>
-              <option value="Dosen Matematika">Dosen Matematika</option>
-              <option value="Dosen PGSD">Dosen PGSD</option>
             </select>
           </div>
         </div>
@@ -141,84 +138,8 @@
                 <th style="width: 6%;">Status PM2</th>
               </tr>
             </thead>
-            <tbody>
-              <!-- BARIS 1 -->
-              <tr>
-                <td class="text-center">1</td>
-                <td>
-                  <div class="fw-semibold text-dark">Budi Santoso, M.Kom.</div>
-                  <div class="text-muted extra-small" style="font-size: 0.75rem;">No: 2026-FT-001</div>
-                </td>
-                <td>
-                  <div class="fw-semibold text-dark">Dosen Teknik Informatika</div>
-                </td>
-                <!-- Nilai Wawancara P1 & P2 -->
-                <td class="text-center fw-bold text-primary">85.00</td>
-                <td class="text-center fw-bold text-primary">88.00</td>
-                <!-- Nilai Praktik PM1 & PM2 -->
-                <td class="text-center fw-bold text-warning-emphasis">90.00</td>
-                <td class="text-center fw-bold text-warning-emphasis">86.00</td>
-                <!-- Rerata -->
-                <td class="text-center fw-bold bg-rerata text-success">86.50</td>
-                <td class="text-center fw-bold bg-rerata text-success">88.00</td>
-                <!-- Status Penguji -->
-                <td class="text-center"><span class="badge bg-success">Selesai</span></td>
-                <td class="text-center"><span class="badge bg-success">Selesai</span></td>
-                <td class="text-center"><span class="badge bg-success">Selesai</span></td>
-                <td class="text-center"><span class="badge bg-success">Selesai</span></td>
-              </tr>
-
-              <!-- BARIS 2 -->
-              <tr>
-                <td class="text-center">2</td>
-                <td>
-                  <div class="fw-semibold text-dark">Siti Nurhaliza, M.Sc.</div>
-                  <div class="text-muted extra-small" style="font-size: 0.75rem;">No: 2026-FM-014</div>
-                </td>
-                <td>
-                  <div class="fw-semibold text-dark">Dosen Matematika</div>
-                </td>
-                <!-- Nilai Wawancara P1 & P2 -->
-                <td class="text-center fw-bold text-primary">80.00</td>
-                <td class="text-center text-muted">-</td>
-                <!-- Nilai Praktik PM1 & PM2 -->
-                <td class="text-center fw-bold text-warning-emphasis">82.00</td>
-                <td class="text-center fw-bold text-warning-emphasis">84.00</td>
-                <!-- Rerata -->
-                <td class="text-center fw-bold bg-rerata text-secondary">80.00</td>
-                <td class="text-center fw-bold bg-rerata text-success">83.00</td>
-                <!-- Status Penguji -->
-                <td class="text-center"><span class="badge bg-success">Selesai</span></td>
-                <td class="text-center"><span class="badge bg-warning text-dark">Belum</span></td>
-                <td class="text-center"><span class="badge bg-success">Selesai</span></td>
-                <td class="text-center"><span class="badge bg-success">Selesai</span></td>
-              </tr>
-
-              <!-- BARIS 3 -->
-              <tr>
-                <td class="text-center">3</td>
-                <td>
-                  <div class="fw-semibold text-dark">Rian Hidayat, M.Pd.</div>
-                  <div class="text-muted extra-small" style="font-size: 0.75rem;">No: 2026-FI-008</div>
-                </td>
-                <td>
-                  <div class="fw-semibold text-dark">Dosen PGSD</div>
-                </td>
-                <!-- Nilai Wawancara P1 & P2 -->
-                <td class="text-center fw-bold text-primary">92.00</td>
-                <td class="text-center fw-bold text-primary">90.00</td>
-                <!-- Nilai Praktik PM1 & PM2 -->
-                <td class="text-center fw-bold text-warning-emphasis">88.00</td>
-                <td class="text-center text-muted">-</td>
-                <!-- Rerata -->
-                <td class="text-center fw-bold bg-rerata text-success">91.00</td>
-                <td class="text-center fw-bold bg-rerata text-secondary">88.00</td>
-                <!-- Status Penguji -->
-                <td class="text-center"><span class="badge bg-success">Selesai</span></td>
-                <td class="text-center"><span class="badge bg-success">Selesai</span></td>
-                <td class="text-center"><span class="badge bg-success">Selesai</span></td>
-                <td class="text-center"><span class="badge bg-warning text-dark">Belum</span></td>
-              </tr>
+            <tbody id="tbodyRekap">
+              <tr><td colspan="13" class="text-center text-muted py-4">Memuat data...</td></tr>
             </tbody>
           </table>
         </div>
@@ -237,15 +158,81 @@
   <!-- Scripts -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/supabase-client.js"></script>
 
   <script>
-    // Filter Formasi
+    document.addEventListener('DOMContentLoaded', () => { if (window.db) loadRekapitulasi(); });
+
+    // Filter Formasi (client-side, dari data yang sudah dimuat)
     $('#filterFormasi').on('change', function() {
       const value = $(this).val().toLowerCase();
       $('#tableRekap tbody tr').filter(function() {
         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
       });
     });
+
+    async function loadRekapitulasi() {
+      const { data, error } = await db.from('v_rekapitulasi').select('*').order('kode_peserta');
+      if (error) { showDbError('memuat rekapitulasi nilai', error); return; }
+      populateFilterFormasi(data);
+      renderRekapitulasi(data);
+    }
+
+    function populateFilterFormasi(rows) {
+      const formasiUnik = Array.from(new Set(rows.map(r => r.formasi_jabatan).filter(Boolean))).sort();
+      const opts = '<option value="">-- Semua Formasi --</option>' +
+        formasiUnik.map(f => `<option value="${escapeHtml(f)}">${escapeHtml(f)}</option>`).join('');
+      $('#filterFormasi').html(opts);
+    }
+
+    function nilaiCell(nilai, colorClass) {
+      return nilai === null || nilai === undefined
+        ? '<td class="text-center text-muted">-</td>'
+        : `<td class="text-center fw-bold ${colorClass}">${Number(nilai).toFixed(2)}</td>`;
+    }
+
+    function rerataCell(nilai, lengkap) {
+      const warna = nilai === null || nilai === undefined ? 'text-muted' : (lengkap ? 'text-success' : 'text-secondary');
+      const isi = nilai === null || nilai === undefined ? '-' : Number(nilai).toFixed(2);
+      return `<td class="text-center fw-bold bg-rerata ${warna}">${isi}</td>`;
+    }
+
+    function statusBadge(selesai) {
+      return selesai
+        ? '<span class="badge bg-success">Selesai</span>'
+        : '<span class="badge bg-warning text-dark">Belum</span>';
+    }
+
+    function renderRekapitulasi(rows) {
+      const tbody = document.getElementById('tbodyRekap');
+      if (!rows.length) {
+        tbody.innerHTML = '<tr><td colspan="13" class="text-center text-muted py-4">Belum ada data peserta.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = rows.map((r, i) => `
+        <tr>
+          <td class="text-center">${i + 1}</td>
+          <td>
+            <div class="fw-semibold text-dark">${escapeHtml(r.nama)}</div>
+            <div class="text-muted extra-small" style="font-size: 0.75rem;">No: ${escapeHtml(r.kode_peserta)}</div>
+          </td>
+          <td><div class="fw-semibold text-dark">${escapeHtml(r.formasi_jabatan || '-')}</div></td>
+          ${nilaiCell(r.nilai_wawancara_p1, 'text-primary')}
+          ${nilaiCell(r.nilai_wawancara_p2, 'text-primary')}
+          ${nilaiCell(r.nilai_praktik_pm1, 'text-warning-emphasis')}
+          ${nilaiCell(r.nilai_praktik_pm2, 'text-warning-emphasis')}
+          ${rerataCell(r.rerata_wawancara, r.nilai_wawancara_p1 !== null && r.nilai_wawancara_p2 !== null)}
+          ${rerataCell(r.rerata_praktik, r.nilai_praktik_pm1 !== null && r.nilai_praktik_pm2 !== null)}
+          <td class="text-center">${statusBadge(r.status_p1)}</td>
+          <td class="text-center">${statusBadge(r.status_p2)}</td>
+          <td class="text-center">${statusBadge(r.status_pm1)}</td>
+          <td class="text-center">${statusBadge(r.status_pm2)}</td>
+        </tr>
+      `).join('');
+    }
   </script>
 </body>
 </html>

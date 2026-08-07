@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Master Ruangan - Sistem Penilaian UM</title>
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome 6 CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    body {
+      background-color: #f4f6f9;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .page-header {
+      background: linear-gradient(135deg, #0d6efd 0%, #0a4b9c 100%);
+      color: white;
+      padding: 30px 0 50px 0;
+      border-bottom-left-radius: 24px;
+      border-bottom-right-radius: 24px;
+    }
+
+    .main-card {
+      border: none;
+      border-radius: 16px;
+      margin-top: -30px;
+    }
+
+    .btn-dt {
+      background-color: #f8f9fa;
+      color: #333;
+      border: 1px solid #ced4da;
+      padding: 5px 12px;
+      font-size: 0.875rem;
+      border-radius: 6px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: all 0.15s ease-in-out;
+    }
+
+    .btn-dt:hover {
+      background-color: #e9ecef;
+      color: #000;
+    }
+  </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+  <!-- ==================== HEADER BANNER ==================== -->
+  <section class="page-header shadow-sm">
+    <div class="container text-center">
+      <h3 class="fw-bold mb-1">Data Master Ruangan</h3>
+      <p class="small opacity-75 mb-0">Kelola Daftar Gedung dan Ruangan Ujian Wawancara / Praktik Mengajar</p>
+    </div>
+  </section>
+
+  <!-- ==================== MAIN CONTENT ==================== -->
+  <div class="container-fluid px-md-4 mb-5">
+    <div class="card main-card shadow-sm p-3 p-md-4">
+      <div class="card-body">
+
+        <!-- Bar Navigasi & Pencarian -->
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+          <div class="d-flex flex-wrap gap-1">
+            <a href="index.html" class="btn-dt">
+              <i class="fa-solid fa-house"></i> Beranda
+            </a>
+            <button class="btn btn-sm btn-primary rounded-2 px-3 fw-semibold" data-bs-toggle="modal" data-bs-target="#modalTambahRuangan">
+              <i class="fa-solid fa-door-open me-1"></i> Tambah Ruangan
+            </button>
+            <button class="btn btn-sm btn-outline-success rounded-2 px-3 fw-semibold" data-bs-toggle="modal" data-bs-target="#modalImportRuangan">
+              <i class="fa-solid fa-file-import me-1"></i> Import Excel
+            </button>
+            <a href="template-data-ruangan.xlsx" download class="btn-dt text-success">
+              <i class="fa-solid fa-download"></i> Download Template
+            </a>
+          </div>
+
+          <div class="d-flex align-items-center gap-2">
+            <label for="inputSearch" class="mb-0 small fw-normal text-secondary">Cari :</label>
+            <input type="text" id="inputSearch" class="form-control form-control-sm" placeholder="Ketik nama ruangan / gedung..." style="width: 240px;">
+          </div>
+        </div>
+
+        <!-- TABEL DATA RUANGAN -->
+        <div class="table-responsive border rounded-3">
+          <table class="table table-hover align-middle small mb-0" id="tableRuangan">
+            <thead class="table-light">
+              <tr>
+                <th style="width: 6%;" class="text-center">No</th>
+                <th style="width: 15%;">Kode</th>
+                <th style="width: 34%;">Nama Ruangan</th>
+                <th style="width: 30%;">Gedung</th>
+                <th style="width: 15%;" class="text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyRuangan">
+              <tr><td colspan="5" class="text-center text-muted py-4">Memuat data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL TAMBAH RUANGAN ==================== -->
+  <div class="modal fade" id="modalTambahRuangan" tabindex="-1" aria-labelledby="modalTambahLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h6 class="modal-title fw-bold" id="modalTambahLabel"><i class="fa-solid fa-door-open me-2"></i>Tambah Ruangan Baru</h6>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="formTambahRuangan">
+          <div class="modal-body small">
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Kode Ruangan</label>
+              <input type="text" id="tambahKodeRuangan" class="form-control form-control-sm" placeholder="Contoh: R-A9-01" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Nama Ruangan</label>
+              <input type="text" id="tambahNamaRuangan" class="form-control form-control-sm" placeholder="Contoh: Ruang Sidang A1" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Gedung</label>
+              <input type="text" id="tambahGedung" class="form-control form-control-sm" placeholder="Contoh: Gedung A9 Lantai 2">
+            </div>
+          </div>
+          <div class="modal-footer bg-light">
+            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-sm btn-primary px-3"><i class="fa-solid fa-floppy-disk me-1"></i>Simpan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL EDIT RUANGAN ==================== -->
+  <div class="modal fade" id="modalEditRuangan" tabindex="-1" aria-labelledby="modalEditLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-warning text-dark">
+          <h6 class="modal-title fw-bold" id="modalEditLabel"><i class="fa-solid fa-pen-to-square me-2"></i>Edit Data Ruangan</h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="formEditRuangan">
+          <div class="modal-body small">
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Kode Ruangan</label>
+              <input type="text" id="editKodeRuangan" class="form-control form-control-sm" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Nama Ruangan</label>
+              <input type="text" id="editNamaRuangan" class="form-control form-control-sm" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Gedung</label>
+              <input type="text" id="editGedung" class="form-control form-control-sm">
+            </div>
+          </div>
+          <div class="modal-footer bg-light">
+            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-sm btn-warning fw-semibold px-3"><i class="fa-solid fa-floppy-disk me-1"></i>Perbarui</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL IMPORT EXCEL ==================== -->
+  <div class="modal fade" id="modalImportRuangan" tabindex="-1" aria-labelledby="modalImportRuanganLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+      <div class="modal-content">
+        <div class="modal-header bg-success text-white">
+          <h6 class="modal-title fw-bold" id="modalImportRuanganLabel"><i class="fa-solid fa-file-import me-2"></i>Import Data Ruangan dari Excel</h6>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body small">
+          <p class="text-secondary mb-2">
+            Gunakan <a href="template-data-ruangan.xlsx" download>template Excel</a> yang sudah disediakan (sheet "Data Ruangan"). Pilih file, periksa hasil pratinjau, lalu klik Import.
+          </p>
+          <input type="file" id="fileImportRuangan" class="form-control form-control-sm mb-3" accept=".xlsx,.xls">
+          <div id="importRuanganSummary" class="mb-2 fw-semibold"></div>
+          <div class="table-responsive border rounded-3" style="max-height: 350px; overflow-y: auto;">
+            <table class="table table-sm table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Baris</th>
+                  <th>Kode</th>
+                  <th>Nama Ruangan</th>
+                  <th>Gedung</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyImportRuanganPreview">
+                <tr><td colspan="5" class="text-center text-muted py-3">Pilih file Excel untuk melihat pratinjau.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer bg-light">
+          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="button" id="btnKonfirmasiImportRuangan" class="btn btn-sm btn-success px-3 fw-semibold" disabled onclick="konfirmasiImportRuangan()">
+            <i class="fa-solid fa-upload me-1"></i> Import Data Valid
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="bg-white border-top py-3 text-center text-secondary small mt-auto">
+    <div class="container">
+      <b>Sistem Penilaian Seleksi UM</b>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/supabase-client.js"></script>
+  <!-- SheetJS (baca file Excel) -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <script>
+    let currentEditId = null;
+    let importRuanganRows = [];
+
+    $(document).ready(async function() {
+      if (!window.db) return;
+
+      await loadRuangan();
+
+      // Live Search
+      $('#inputSearch').on('keyup', function() {
+        const value = $(this).val().toLowerCase();
+        $('#tableRuangan tbody tr').filter(function() {
+          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+        });
+      });
+
+      // Submit Form Tambah
+      $('#formTambahRuangan').on('submit', async function(e) {
+        e.preventDefault();
+        try {
+          const { error } = await db.from('ruangan').insert({
+            kode: $('#tambahKodeRuangan').val().trim(),
+            nama_ruangan: $('#tambahNamaRuangan').val().trim(),
+            gedung: $('#tambahGedung').val().trim() || null,
+          });
+          if (error) throw error;
+          alert('Ruangan baru berhasil ditambahkan!');
+          bootstrap.Modal.getInstance(document.getElementById('modalTambahRuangan')).hide();
+          this.reset();
+          loadRuangan();
+        } catch (err) {
+          showDbError('menambahkan ruangan', err);
+        }
+      });
+
+      // Buka Modal Edit & Isi Data
+      $(document).on('click', '.btn-edit-ruangan', function() {
+        const row = $(this).closest('tr');
+        currentEditId = row.data('id');
+
+        $('#editKodeRuangan').val(row.find('.td-kode').text().trim());
+        $('#editNamaRuangan').val(row.find('.td-nama').text().trim());
+        $('#editGedung').val(row.find('.td-gedung').text().trim());
+
+        $('#modalEditRuangan').modal('show');
+      });
+
+      // Submit Form Edit
+      $('#formEditRuangan').on('submit', async function(e) {
+        e.preventDefault();
+        try {
+          const { error } = await db.from('ruangan').update({
+            kode: $('#editKodeRuangan').val().trim(),
+            nama_ruangan: $('#editNamaRuangan').val().trim(),
+            gedung: $('#editGedung').val().trim() || null,
+          }).eq('id', currentEditId);
+          if (error) throw error;
+          alert('Data ruangan berhasil diperbarui!');
+          $('#modalEditRuangan').modal('hide');
+          loadRuangan();
+        } catch (err) {
+          showDbError('memperbarui ruangan', err);
+        }
+      });
+
+      // Hapus Ruangan
+      $(document).on('click', '.btn-hapus-ruangan', async function() {
+        const row = $(this).closest('tr');
+        const id = row.data('id');
+        if (!confirm('Hapus ruangan ini?')) return;
+        const { error } = await db.from('ruangan').delete().eq('id', id);
+        if (error) { showDbError('menghapus ruangan', error); return; }
+        loadRuangan();
+      });
+
+      // Import Excel: pilih file -> parse & pratinjau
+      $('#fileImportRuangan').on('change', async function(e) {
+        const file = e.target.files[0];
+        if (file) await prosesFileImportRuangan(file);
+      });
+
+      // Reset modal import saat ditutup
+      $('#modalImportRuangan').on('hidden.bs.modal', function() {
+        importRuanganRows = [];
+        $('#fileImportRuangan').val('');
+        $('#importRuanganSummary').html('');
+        $('#tbodyImportRuanganPreview').html('<tr><td colspan="5" class="text-center text-muted py-3">Pilih file Excel untuk melihat pratinjau.</td></tr>');
+        $('#btnKonfirmasiImportRuangan').prop('disabled', true);
+      });
+    });
+
+    async function loadRuangan() {
+      const { data, error } = await db.from('ruangan').select('*').order('nama_ruangan');
+      if (error) { showDbError('memuat data ruangan', error); return; }
+      renderRuangan(data);
+    }
+
+    function renderRuangan(rows) {
+      const tbody = document.getElementById('tbodyRuangan');
+      if (!rows.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">Belum ada data ruangan.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = rows.map((r, i) => `
+        <tr data-id="${r.id}">
+          <td class="text-center">${i + 1}</td>
+          <td class="fw-bold text-primary td-kode">${escapeHtml(r.kode)}</td>
+          <td class="fw-semibold text-dark td-nama">${escapeHtml(r.nama_ruangan)}</td>
+          <td class="td-gedung">${escapeHtml(r.gedung || '-')}</td>
+          <td class="text-center">
+            <button class="btn btn-sm btn-outline-primary border-0 btn-edit-ruangan" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
+            <button class="btn btn-sm btn-outline-danger border-0 btn-hapus-ruangan" title="Hapus"><i class="fa-solid fa-trash"></i></button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // ==================== IMPORT EXCEL ====================
+    const FIELD_MAP_IMPORT_RUANGAN = {
+      'kode ruangan': 'kode',
+      'nama ruangan': 'nama_ruangan',
+      'gedung': 'gedung',
+    };
+
+    async function prosesFileImportRuangan(file) {
+      $('#importRuanganSummary').html('<span class="text-muted">Memproses file...</span>');
+      try {
+        const buf = await file.arrayBuffer();
+        const wb = XLSX.read(buf, { type: 'array' });
+        const sheetName = wb.SheetNames.includes('Data Ruangan') ? 'Data Ruangan' : wb.SheetNames[0];
+        const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { header: 1, defval: '' });
+
+        const headerIdx = rows.findIndex(r => r.some(cell => String(cell).toLowerCase().includes('kode ruangan')));
+        if (headerIdx === -1) {
+          $('#importRuanganSummary').html('<span class="text-danger">Header "Kode Ruangan" tidak ditemukan. Gunakan template yang disediakan.</span>');
+          importRuanganRows = [];
+          renderPreviewImportRuangan();
+          return;
+        }
+
+        const headerRow = rows[headerIdx];
+        const colToField = headerRow.map(h => FIELD_MAP_IMPORT_RUANGAN[String(h).replace(/\*$/, '').trim().toLowerCase()] || null);
+
+        const parsed = [];
+        rows.slice(headerIdx + 1).forEach((r, idx) => {
+          const obj = { _baris: headerIdx + idx + 2 };
+          colToField.forEach((field, i) => { if (field) obj[field] = String(r[i] ?? '').trim(); });
+
+          const kosong = !obj.kode && !obj.nama_ruangan;
+          const contoh = obj.kode === 'R-A9-01' && obj.nama_ruangan === 'Ruang Sidang A1';
+          if (kosong || contoh) return;
+
+          parsed.push(obj);
+        });
+
+        importRuanganRows = parsed.map(validasiBarisImportRuangan);
+        renderPreviewImportRuangan();
+      } catch (err) {
+        $('#importRuanganSummary').html('<span class="text-danger">Gagal membaca file: ' + escapeHtml(err.message) + '</span>');
+      }
+    }
+
+    function validasiBarisImportRuangan(row) {
+      const errors = [];
+      if (!row.kode) errors.push('Kode Ruangan kosong');
+      if (!row.nama_ruangan) errors.push('Nama Ruangan kosong');
+      return { ...row, errors };
+    }
+
+    function renderPreviewImportRuangan() {
+      const tbody = document.getElementById('tbodyImportRuanganPreview');
+      if (!importRuanganRows.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">Tidak ada baris data yang terdeteksi.</td></tr>';
+        $('#importRuanganSummary').html('<span class="text-muted">Tidak ada baris data untuk diimpor (isi dulu template mulai baris 6).</span>');
+        $('#btnKonfirmasiImportRuangan').prop('disabled', true);
+        return;
+      }
+
+      tbody.innerHTML = importRuanganRows.map(r => `
+        <tr>
+          <td>${r._baris}</td>
+          <td>${escapeHtml(r.kode || '-')}</td>
+          <td>${escapeHtml(r.nama_ruangan || '-')}</td>
+          <td>${escapeHtml(r.gedung || '-')}</td>
+          <td>${r.errors.length
+            ? `<span class="badge bg-danger-subtle text-danger border border-danger-subtle" title="${escapeHtml(r.errors.join('; '))}"><i class="fa-solid fa-circle-xmark me-1"></i>${escapeHtml(r.errors.join(', '))}</span>`
+            : '<span class="badge bg-success-subtle text-success border border-success-subtle"><i class="fa-solid fa-circle-check me-1"></i>Valid</span>'}
+          </td>
+        </tr>
+      `).join('');
+
+      const validCount = importRuanganRows.filter(r => !r.errors.length).length;
+      const errorCount = importRuanganRows.length - validCount;
+      $('#importRuanganSummary').html(
+        `<span class="text-success">${validCount} baris valid</span>` +
+        (errorCount ? ` &middot; <span class="text-danger">${errorCount} baris bermasalah (akan dilewati)</span>` : '')
+      );
+      $('#btnKonfirmasiImportRuangan').prop('disabled', validCount === 0);
+    }
+
+    async function konfirmasiImportRuangan() {
+      const validRows = importRuanganRows.filter(r => !r.errors.length);
+      if (!validRows.length) return;
+
+      const $btn = $('#btnKonfirmasiImportRuangan');
+      $btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin me-1"></i> Mengimpor...');
+
+      let sukses = 0;
+      const gagal = [];
+      for (const r of validRows) {
+        const { error } = await db.from('ruangan').insert({
+          kode: r.kode,
+          nama_ruangan: r.nama_ruangan,
+          gedung: r.gedung || null,
+        });
+        if (error) gagal.push(`Baris ${r._baris} (${r.kode}): ${error.message}`);
+        else sukses++;
+      }
+
+      $btn.html('<i class="fa-solid fa-upload me-1"></i> Import Data Valid');
+
+      alert(`Import selesai: ${sukses} ruangan berhasil ditambahkan.` + (gagal.length ? `\n\nGagal (${gagal.length}):\n` + gagal.join('\n') : ''));
+
+      if (sukses > 0) {
+        bootstrap.Modal.getInstance(document.getElementById('modalImportRuangan')).hide();
+        loadRuangan();
+      } else {
+        $btn.prop('disabled', false);
+      }
+    }
+  </script>
+</body>
+</html>

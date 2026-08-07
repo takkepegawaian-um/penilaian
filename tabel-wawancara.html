@@ -91,7 +91,7 @@
         <!-- Toolbar Buttons & Search -->
         <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
           <div class="dt-buttons d-flex gap-1 flex-wrap">
-            <a href="home.html" class="btn btn-outline-primary btn-dt fw-semibold me-2">
+            <a href="index.html" class="btn btn-outline-primary btn-dt fw-semibold me-2">
               <i class="fa-solid fa-house me-1"></i> Beranda
             </a>
             <button class="btn btn-dt"><i class="fa-solid fa-copy me-1"></i> Copy</button>
@@ -126,257 +126,8 @@
                 <th>II</th>
               </tr>
             </thead>
-            <tbody>
-              <!-- Contoh Data 1: FIP -->
-              <tr>
-                <td class="text-center fw-semibold">1</td>
-                <td class="fw-bold text-dark">Dummy Peserta 1</td>
-                <td class="text-center"><span class="badge bg-secondary bg-opacity-10 text-secondary">PSR-001</span></td>
-                <td>Malang</td>
-                <td class="text-center"><span class="badge badge-fip fw-bold">FIP</span></td>
-                <td class="text-center">
-                  <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">
-                    Offline
-                  </span>
-                </td>
-                <td class="text-center">
-                  <button type="button" class="btn btn-sm btn-outline-primary rounded-2 px-2" 
-                          data-bs-toggle="modal" 
-                          data-bs-target="#modalFilePreview"
-                          onclick="showPreview('Dummy Peserta 1', 'path/to/file_wawancara1.pdf')"
-                          title="Lihat Berkas Peserta">
-                    <i class="fa-regular fa-image fs-6"></i>
-                  </button>
-                </td>
-                <td>Pewawancara 1</td>
-                <td>Pewawancara 2</td>
-                <td class="text-center">
-                  <div class="d-flex justify-content-center gap-1">
-                    <a href="form-wawancara.html?id=1&pewawancara=1" class="btn btn-sm btn-primary fw-semibold">
-                      <i class="fa-solid fa-pen-to-square me-1"></i> Nilai Wawancara I
-                    </a>
-                    <a href="form-wawancara.html?id=1&pewawancara=2" class="btn btn-sm btn-secondary text-white fw-semibold">
-                      <i class="fa-solid fa-pen-to-square me-1"></i> Nilai Wawancara II
-                    </a>
-                  </div>
-                </td>
-              </tr>
-
-              <!-- Contoh Data 2: FS -->
-              <tr>
-                <td class="text-center fw-semibold">2</td>
-                <td class="fw-bold text-dark">Dummy Peserta 2</td>
-                <td class="text-center"><span class="badge bg-secondary bg-opacity-10 text-secondary">PSR-002</span></td>
-                <td>Malang</td>
-                <td class="text-center"><span class="badge badge-fs fw-bold">FS</span></td>
-                <td class="text-center">
-                  <span class="badge bg-info-subtle text-info border border-info-subtle px-2 py-1">
-                    Online
-                  </span>
-                </td>
-                <td class="text-center">
-                  <button type="button" class="btn btn-sm btn-outline-primary rounded-2 px-2" 
-                          data-bs-toggle="modal" 
-                          data-bs-target="#modalFilePreview"
-                          onclick="showPreview('Dummy Peserta 2', 'path/to/file_wawancara2.pdf')"
-                          title="Lihat Berkas Peserta">
-                    <i class="fa-regular fa-image fs-6"></i>
-                  </button>
-                </td>
-                <td>Pewawancara 1</td>
-                <td>Pewawancara 2</td>
-                <td class="text-center">
-                  <div class="d-flex justify-content-center gap-1">
-                    <a href="form-wawancara.html?id=2&pewawancara=1" class="btn btn-sm btn-primary fw-semibold">
-                      <i class="fa-solid fa-pen-to-square me-1"></i> Nilai Wawancara I
-                    </a>
-                    <a href="form-wawancara.html?id=2&pewawancara=2" class="btn btn-sm btn-secondary text-white fw-semibold">
-                      <i class="fa-solid fa-pen-to-square me-1"></i> Nilai Wawancara II
-                    </a>
-                  </div>
-                </td>
-              </tr>
-
-              <!-- Contoh Data 3: FMIPA -->
-              <tr>
-                <td class="text-center fw-semibold">3</td>
-                <td class="fw-bold text-dark">Dummy Peserta 3</td>
-                <td class="text-center"><span class="badge bg-secondary bg-opacity-10 text-secondary">PSR-003</span></td>
-                <td>Malang</td>
-                <td class="text-center"><span class="badge badge-fmipa fw-bold">FMIPA</span></td>
-                <td class="text-center">
-                  <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">
-                    Tidak Hadir
-                  </span>
-                </td>
-                <td class="text-center">
-                  <span class="text-muted small fs-7"><i class="fa-solid fa-minus"></i></span>
-                </td>
-                <td>Pewawancara 1</td>
-                <td>Pewawancara 2</td>
-                <td class="text-center">
-                  <div class="d-flex justify-content-center gap-1">
-                    <a href="form-wawancara.html?id=3&pewawancara=1" class="btn btn-sm btn-primary fw-semibold">
-                      <i class="fa-solid fa-pen-to-square me-1"></i> Nilai Wawancara I
-                    </a>
-                    <a href="form-wawancara.html?id=3&pewawancara=2" class="btn btn-sm btn-secondary text-white fw-semibold">
-                      <i class="fa-solid fa-pen-to-square me-1"></i> Nilai Wawancara II
-                    </a>
-                  </div>
-                </td>
-              </tr>
-
-              <!-- Contoh Data 4: FEB -->
-              <tr>
-                <td class="text-center fw-semibold">4</td>
-                <td class="fw-bold text-dark">Dummy Peserta 4</td>
-                <td class="text-center"><span class="badge bg-secondary bg-opacity-10 text-secondary">PSR-004</span></td>
-                <td>Malang</td>
-                <td class="text-center"><span class="badge badge-feb fw-bold">FEB</span></td>
-                <td class="text-center"><span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">Offline</span></td>
-                <td class="text-center"><span class="text-muted small fs-7"><i class="fa-solid fa-minus"></i></span></td>
-                <td>Pewawancara 1</td>
-                <td>Pewawancara 2</td>
-                <td class="text-center">
-                  <div class="d-flex justify-content-center gap-1">
-                    <a href="form-wawancara.html?id=4&pewawancara=1" class="btn btn-sm btn-primary fw-semibold"><i class="fa-solid fa-pen-to-square me-1"></i> Nilai Wawancara I</a>
-                    <a href="form-wawancara.html?id=4&pewawancara=2" class="btn btn-sm btn-secondary text-white fw-semibold"><i class="fa-solid fa-pen-to-square me-1"></i> Nilai Wawancara II</a>
-                  </div>
-                </td>
-              </tr>
-
-              <!-- Contoh Data 5: FT -->
-              <tr>
-                <td class="text-center fw-semibold">5</td>
-                <td class="fw-bold text-dark">Dummy Peserta 5</td>
-                <td class="text-center"><span class="badge bg-secondary bg-opacity-10 text-secondary">PSR-005</span></td>
-                <td>Malang</td>
-                <td class="text-center"><span class="badge badge-ft fw-bold">FT</span></td>
-                <td class="text-center"><span class="badge bg-info-subtle text-info border border-info-subtle px-2 py-1">Online</span></td>
-                <td class="text-center"><span class="text-muted small fs-7"><i class="fa-solid fa-minus"></i></span></td>
-                <td>Pewawancara 1</td>
-                <td>Pewawancara 2</td>
-                <td class="text-center">
-                  <div class="d-flex justify-content-center gap-1">
-                    <a href="form-wawancara.html?id=5&pewawancara=1" class="btn btn-sm btn-primary fw-semibold"><i class="fa-solid fa-pen-to-square me-1"></i> Nilai Wawancara I</a>
-                    <a href="form-wawancara.html?id=5&pewawancara=2" class="btn btn-sm btn-secondary text-white fw-semibold"><i class="fa-solid fa-pen-to-square me-1"></i> Nilai Wawancara II</a>
-                  </div>
-                </td>
-              </tr>
-
-              <!-- Contoh Data 6: FIK -->
-              <tr>
-                <td class="text-center fw-semibold">6</td>
-                <td class="fw-bold text-dark">Dummy Peserta 6</td>
-                <td class="text-center"><span class="badge bg-secondary bg-opacity-10 text-secondary">PSR-006</span></td>
-                <td>Malang</td>
-                <td class="text-center"><span class="badge badge-fik fw-bold">FIK</span></td>
-                <td class="text-center"><span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">Offline</span></td>
-                <td class="text-center"><span class="text-muted small fs-7"><i class="fa-solid fa-minus"></i></span></td>
-                <td>Pewawancara 1</td>
-                <td>Pewawancara 2</td>
-                <td class="text-center">
-                  <div class="d-flex justify-content-center gap-1">
-                    <a href="form-wawancara.html?id=6&pewawancara=1" class="btn btn-sm btn-primary fw-semibold"><i class="fa-solid fa-pen-to-square me-1"></i> Nilai Wawancara I</a>
-                    <a href="form-wawancara.html?id=6&pewawancara=2" class="btn btn-sm btn-secondary text-white fw-semibold"><i class="fa-solid fa-pen-to-square me-1"></i> Nilai Wawancara II</a>
-                  </div>
-                </td>
-              </tr>
-
-              <!-- Contoh Data 7: FIS -->
-              <tr>
-                <td class="text-center fw-semibold">7</td>
-                <td class="fw-bold text-dark">Dummy Peserta 7</td>
-                <td class="text-center"><span class="badge bg-secondary bg-opacity-10 text-secondary">PSR-007</span></td>
-                <td>Malang</td>
-                <td class="text-center"><span class="badge badge-fis fw-bold">FIS</span></td>
-                <td class="text-center"><span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">Offline</span></td>
-                <td class="text-center"><span class="text-muted small fs-7"><i class="fa-solid fa-minus"></i></span></td>
-                <td>Pewawancara 1</td>
-                <td>Pewawancara 2</td>
-                <td class="text-center">
-                  <div class="d-flex justify-content-center gap-1">
-                    <a href="form-wawancara.html?id=7&pewawancara=1" class="btn btn-sm btn-primary fw-semibold"><i class="fa-solid fa-pen-to-square me-1"></i> Nilai Wawancara I</a>
-                    <a href="form-wawancara.html?id=7&pewawancara=2" class="btn btn-sm btn-secondary text-white fw-semibold"><i class="fa-solid fa-pen-to-square me-1"></i> Nilai Wawancara II</a>
-                  </div>
-                </td>
-              </tr>
-
-              <!-- Contoh Data 8: FPSI -->
-              <tr>
-                <td class="text-center fw-semibold">8</td>
-                <td class="fw-bold text-dark">Dummy Peserta 8</td>
-                <td class="text-center"><span class="badge bg-secondary bg-opacity-10 text-secondary">PSR-008</span></td>
-                <td>Malang</td>
-                <td class="text-center"><span class="badge badge-fpsi fw-bold">FPSI</span></td>
-                <td class="text-center"><span class="badge bg-info-subtle text-info border border-info-subtle px-2 py-1">Online</span></td>
-                <td class="text-center"><span class="text-muted small fs-7"><i class="fa-solid fa-minus"></i></span></td>
-                <td>Pewawancara 1</td>
-                <td>Pewawancara 2</td>
-                <td class="text-center">
-                  <div class="d-flex justify-content-center gap-1">
-                    <a href="form-wawancara.html?id=8&pewawancara=1" class="btn btn-sm btn-primary fw-semibold"><i class="fa-solid fa-pen-to-square me-1"></i> Nilai Wawancara I</a>
-                    <a href="form-wawancara.html?id=8&pewawancara=2" class="btn btn-sm btn-secondary text-white fw-semibold"><i class="fa-solid fa-pen-to-square me-1"></i> Nilai Wawancara II</a>
-                  </div>
-                </td>
-              </tr>
-
-              <!-- Contoh Data 9: FV -->
-              <tr>
-                <td class="text-center fw-semibold">9</td>
-                <td class="fw-bold text-dark">Dummy Peserta 9</td>
-                <td class="text-center"><span class="badge bg-secondary bg-opacity-10 text-secondary">PSR-009</span></td>
-                <td>Malang</td>
-                <td class="text-center"><span class="badge badge-fv fw-bold">FV</span></td>
-                <td class="text-center"><span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">Offline</span></td>
-                <td class="text-center"><span class="text-muted small fs-7"><i class="fa-solid fa-minus"></i></span></td>
-                <td>Pewawancara 1</td>
-                <td>Pewawancara 2</td>
-                <td class="text-center">
-                  <div class="d-flex justify-content-center gap-1">
-                    <a href="form-wawancara.html?id=9&pewawancara=1" class="btn btn-sm btn-primary fw-semibold"><i class="fa-solid fa-pen-to-square me-1"></i> Nilai Wawancara I</a>
-                    <a href="form-wawancara.html?id=9&pewawancara=2" class="btn btn-sm btn-secondary text-white fw-semibold"><i class="fa-solid fa-pen-to-square me-1"></i> Nilai Wawancara II</a>
-                  </div>
-                </td>
-              </tr>
-
-              <!-- Contoh Data 10: FK -->
-              <tr>
-                <td class="text-center fw-semibold">10</td>
-                <td class="fw-bold text-dark">Dummy Peserta 10</td>
-                <td class="text-center"><span class="badge bg-secondary bg-opacity-10 text-secondary">PSR-010</span></td>
-                <td>Malang</td>
-                <td class="text-center"><span class="badge badge-fk fw-bold">FK</span></td>
-                <td class="text-center"><span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">Offline</span></td>
-                <td class="text-center"><span class="text-muted small fs-7"><i class="fa-solid fa-minus"></i></span></td>
-                <td>Pewawancara 1</td>
-                <td>Pewawancara 2</td>
-                <td class="text-center">
-                  <div class="d-flex justify-content-center gap-1">
-                    <a href="form-wawancara.html?id=10&pewawancara=1" class="btn btn-sm btn-primary fw-semibold"><i class="fa-solid fa-pen-to-square me-1"></i> Nilai Wawancara I</a>
-                    <a href="form-wawancara.html?id=10&pewawancara=2" class="btn btn-sm btn-secondary text-white fw-semibold"><i class="fa-solid fa-pen-to-square me-1"></i> Nilai Wawancara II</a>
-                  </div>
-                </td>
-              </tr>
-
-              <!-- Contoh Data 11: SPS -->
-              <tr>
-                <td class="text-center fw-semibold">11</td>
-                <td class="fw-bold text-dark">Dummy Peserta 11</td>
-                <td class="text-center"><span class="badge bg-secondary bg-opacity-10 text-secondary">PSR-011</span></td>
-                <td>Malang</td>
-                <td class="text-center"><span class="badge badge-sps fw-bold">SPS</span></td>
-                <td class="text-center"><span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">Tidak Hadir</span></td>
-                <td class="text-center"><span class="text-muted small fs-7"><i class="fa-solid fa-minus"></i></span></td>
-                <td>Pewawancara 1</td>
-                <td>Pewawancara 2</td>
-                <td class="text-center">
-                  <div class="d-flex justify-content-center gap-1">
-                    <a href="form-wawancara.html?id=11&pewawancara=1" class="btn btn-sm btn-primary fw-semibold"><i class="fa-solid fa-pen-to-square me-1"></i> Nilai Wawancara I</a>
-                    <a href="form-wawancara.html?id=11&pewawancara=2" class="btn btn-sm btn-secondary text-white fw-semibold"><i class="fa-solid fa-pen-to-square me-1"></i> Nilai Wawancara II</a>
-                  </div>
-                </td>
-              </tr>
+            <tbody id="tbodyWawancara">
+              <tr><td colspan="10" class="text-center text-muted py-4">Memuat data...</td></tr>
             </tbody>
           </table>
         </div>
@@ -426,6 +177,9 @@
 
   <!-- Bootstrap 5 JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/supabase-client.js"></script>
 
   <script>
     function showPreview(nama, fileUrl) {
@@ -444,6 +198,84 @@
         img.classList.remove('d-none');
         iframe.classList.add('d-none');
       }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => { if (window.db) loadTabelWawancara(); });
+
+    $(document).ready(function() {
+      $('#searchWawancara').on('keyup', function() {
+        const value = $(this).val().toLowerCase();
+        $('#tbodyWawancara tr').filter(function() {
+          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+        });
+      });
+    });
+
+    async function loadTabelWawancara() {
+      const { data, error } = await db
+        .from('peserta')
+        .select('id, kode_peserta, nama, penempatan, fakultas(kode), penugasan(id, urutan, jenis_sesi, penguji(nama), penilaian(status_kehadiran, file_berkas_url))')
+        .order('kode_peserta');
+
+      if (error) { showDbError('memuat data penilaian wawancara', error); return; }
+      renderTabelWawancara(data);
+    }
+
+    function statusBadgeHtml(status) {
+      if (!status) return '<span class="text-muted small fs-7"><i class="fa-solid fa-minus"></i></span>';
+      if (status === 'Tidak Hadir') return '<span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">Tidak Hadir</span>';
+      if (status === 'Online') return '<span class="badge bg-info-subtle text-info border border-info-subtle px-2 py-1">Online</span>';
+      return '<span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">Offline</span>';
+    }
+
+    function renderTabelWawancara(rows) {
+      const tbody = document.getElementById('tbodyWawancara');
+      if (!rows.length) {
+        tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted py-4">Belum ada data peserta.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = rows.map((r, i) => {
+        const sesi = r.penugasan.filter(p => p.jenis_sesi === 'Wawancara');
+        const u1 = sesi.find(p => p.urutan === 1);
+        const u2 = sesi.find(p => p.urutan === 2);
+        const penilaianAcuan = (u1 && u1.penilaian) || (u2 && u2.penilaian);
+        const kode = r.fakultas ? r.fakultas.kode : '-';
+        const fileUrl = penilaianAcuan ? penilaianAcuan.file_berkas_url : null;
+
+        const berkasCell = fileUrl
+          ? `<button type="button" class="btn btn-sm btn-outline-primary rounded-2 px-2" data-bs-toggle="modal" data-bs-target="#modalFilePreview" onclick="showPreview('${escapeHtml(r.nama)}', '${escapeHtml(fileUrl)}')" title="Lihat Berkas Peserta"><i class="fa-regular fa-image fs-6"></i></button>`
+          : '<span class="text-muted small fs-7"><i class="fa-solid fa-minus"></i></span>';
+
+        const nama1 = u1 && u1.penguji ? escapeHtml(u1.penguji.nama) : '<span class="text-muted fst-italic">Belum diplot</span>';
+        const nama2 = u2 && u2.penguji ? escapeHtml(u2.penguji.nama) : '<span class="text-muted fst-italic">Belum diplot</span>';
+
+        const btn1 = u1
+          ? `<a href="form-wawancara.html?penugasan_id=${u1.id}" class="btn btn-sm btn-primary fw-semibold"><i class="fa-solid fa-pen-to-square me-1"></i> Nilai Wawancara I</a>`
+          : `<button class="btn btn-sm btn-primary fw-semibold" disabled title="Plot pewawancara I di menu Plotting"><i class="fa-solid fa-pen-to-square me-1"></i> Nilai Wawancara I</button>`;
+        const btn2 = u2
+          ? `<a href="form-wawancara.html?penugasan_id=${u2.id}" class="btn btn-sm btn-secondary text-white fw-semibold"><i class="fa-solid fa-pen-to-square me-1"></i> Nilai Wawancara II</a>`
+          : `<button class="btn btn-sm btn-secondary text-white fw-semibold" disabled title="Plot pewawancara II di menu Plotting"><i class="fa-solid fa-pen-to-square me-1"></i> Nilai Wawancara II</button>`;
+
+        return `
+          <tr>
+            <td class="text-center fw-semibold">${i + 1}</td>
+            <td class="fw-bold text-dark">${escapeHtml(r.nama)}</td>
+            <td class="text-center"><span class="badge bg-secondary bg-opacity-10 text-secondary">${escapeHtml(r.kode_peserta)}</span></td>
+            <td>${escapeHtml(r.penempatan || '-')}</td>
+            <td class="text-center"><span class="badge badge-${kode.toLowerCase()} fw-bold">${kode}</span></td>
+            <td class="text-center">${statusBadgeHtml(penilaianAcuan ? penilaianAcuan.status_kehadiran : null)}</td>
+            <td class="text-center">${berkasCell}</td>
+            <td>${nama1}</td>
+            <td>${nama2}</td>
+            <td class="text-center">
+              <div class="d-flex justify-content-center gap-1">
+                ${btn1}
+                ${btn2}
+              </div>
+            </td>
+          </tr>`;
+      }).join('');
     }
   </script>
 </body>

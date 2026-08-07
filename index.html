@@ -66,6 +66,7 @@
     .icon-danger { background-color: #f8d7da; color: #842029; }
     .icon-secondary { background-color: #e2e3e5; color: #41464b; }
     .icon-orange { background-color: #ffe8cc; color: #d9480f; } /* Style ikon untuk Master Ruangan */
+    .icon-cyan { background-color: #e0f7fa; color: #00838f; } /* Style ikon untuk Daftar Hadir */
   </style>
 </head>
 <body class="d-flex flex-column min-vh-100">
@@ -88,8 +89,8 @@
             <h5 class="fw-bold mb-0 text-dark">Menu Utama</h5>
             <small class="text-secondary">Pilih menu di bawah untuk mengelola data dan proses seleksi</small>
           </div>
-          <span class="badge bg-light text-secondary border px-3 py-2">
-            <i class="fa-regular fa-calendar-check me-1"></i> Tahun Seleksi: 2026
+          <span id="badgeTahunSeleksi" class="badge bg-light text-secondary border px-3 py-2">
+            <i class="fa-regular fa-calendar-check me-1"></i> Memuat...
           </span>
         </div>
 
@@ -162,6 +163,17 @@
             </a>
           </div>
 
+          <!-- Daftar Hadir Peserta -->
+          <div class="col-md-6 col-lg-4">
+            <a href="daftar-hadir.html" class="menu-card p-3 h-100">
+              <div class="icon-box icon-cyan">
+                <i class="fa-solid fa-clipboard-check"></i>
+              </div>
+              <h6 class="fw-bold mb-1 text-dark">Daftar Hadir</h6>
+              <p class="small text-secondary mb-0">Cetak lembar presensi peserta untuk sesi wawancara dan praktik mengajar.</p>
+            </a>
+          </div>
+
           <!-- Rekapitulasi Nilai Akhir -->
           <div class="col-md-6 col-lg-4">
             <a href="rekapitulasi.html" class="menu-card p-3 h-100">
@@ -210,5 +222,27 @@
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/supabase-client.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const badge = document.getElementById('badgeTahunSeleksi');
+      if (!window.db) {
+        badge.innerHTML = '<i class="fa-regular fa-calendar-check me-1"></i> Belum terhubung ke database';
+        return;
+      }
+      const { data, error } = await db
+        .from('periode_seleksi')
+        .select('tahun')
+        .eq('status_aktif', true)
+        .order('id', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      badge.innerHTML = `<i class="fa-regular fa-calendar-check me-1"></i> Tahun Seleksi: ${(!error && data) ? escapeHtml(data.tahun) : '-'}`;
+    });
+  </script>
 </body>
 </html>

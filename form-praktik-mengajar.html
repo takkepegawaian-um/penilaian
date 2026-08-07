@@ -108,19 +108,19 @@
           <div class="row g-3">
             <div class="col-md-3">
               <span class="identity-label d-block">Nama Peserta Seleksi :</span>
-              <span class="identity-value d-block">Dummy Peserta</span>
+              <span id="idNamaPeserta" class="identity-value d-block">Memuat...</span>
             </div>
             <div class="col-md-3">
               <span class="identity-label d-block">Kualifikasi Pendidikan :</span>
-              <span class="identity-value d-block">S2 Pendidikan Matematika</span>
+              <span id="idPendidikan" class="identity-value d-block">-</span>
             </div>
             <div class="col-md-3">
               <span class="identity-label d-block">Penempatan :</span>
-              <span class="identity-value d-block">FMIPA</span>
+              <span id="idPenempatan" class="identity-value d-block">-</span>
             </div>
             <div class="col-md-3">
-              <span class="identity-label d-block">Penilai Mengajar I :</span>
-              <span class="identity-value d-block">Penilai I</span>
+              <span id="idLabelPenguji" class="identity-label d-block">Penilai Mengajar :</span>
+              <span id="idNamaPenguji" class="identity-value d-block">-</span>
             </div>
           </div>
 
@@ -212,25 +212,79 @@
     </div>
   </div>
 
+<!-- Supabase JS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/supabase-client.js"></script>
+
 <script>
-  const u = [
-    "Kemampuan verbal (intonasi, pemilihan kata/diksi, kualitas suara)",
-    "Kemampuan menggunakan alat bantu mengajar termasuk RPS dan media pembelajaran",
-    "Kemampuan akademik (penguasaan materi)",
-    "Kemampuan Bahasa Asing/Inggris",
-    "Sikap dan penampilan di kelas"
-  ];
+  let currentPenugasanId = null;
+  let currentPenilaianId = null;
 
-  const tbody = document.getElementById("t");
+  document.addEventListener("DOMContentLoaded", async () => {
+    if (!window.db) return;
 
-  u.forEach((x, i) => {
-    let r = `<tr><td class="text-center fw-bold text-muted">${i + 1}</td><td>${x}</td>`;
-    for (let j = 1; j <= 5; j++) {
-      r += `<td class="score"><input class="form-check-input score-radio" type="radio" name="n${i}" value="${j}" onchange="h()"></td>`;
+    currentPenugasanId = qs("penugasan_id");
+    if (!currentPenugasanId) {
+      alert("Parameter penugasan_id tidak ditemukan. Buka form ini melalui menu Penilaian Praktik Mengajar.");
+      return;
     }
-    r += "</tr>";
-    tbody.innerHTML += r;
+    await muatForm();
   });
+
+  async function muatForm() {
+    const { data: penugasan, error: errPenugasan } = await db
+      .from("penugasan")
+      .select("id, urutan, jenis_sesi, penguji(nama), peserta(nama, pendidikan_terakhir, fakultas(nama))")
+      .eq("id", currentPenugasanId)
+      .single();
+
+    if (errPenugasan || !penugasan) { showDbError("memuat data penugasan", errPenugasan || new Error("Data tidak ditemukan")); return; }
+
+    document.getElementById("idNamaPeserta").textContent = penugasan.peserta.nama;
+    document.getElementById("idPendidikan").textContent = penugasan.peserta.pendidikan_terakhir || "-";
+    document.getElementById("idPenempatan").textContent = penugasan.peserta.fakultas ? penugasan.peserta.fakultas.nama : "-";
+    document.getElementById("idLabelPenguji").textContent = "Penilai Mengajar " + (penugasan.urutan === 1 ? "I" : "II") + " :";
+    document.getElementById("idNamaPenguji").textContent = penugasan.penguji ? penugasan.penguji.nama : "-";
+
+    const { data: unsur, error: errUnsur } = await db
+      .from("unsur_penilaian")
+      .select("id, nama_unsur, skor_maks")
+      .eq("jenis_sesi", "Praktik Mengajar")
+      .eq("aktif", true)
+      .order("urutan");
+    if (errUnsur) { showDbError("memuat kriteria penilaian", errUnsur); return; }
+
+    const { data: penilaian, error: errPenilaian } = await db
+      .from("penilaian")
+      .select("id, status_kehadiran, catatan, penilaian_detail(unsur_id, skor)")
+      .eq("penugasan_id", currentPenugasanId)
+      .maybeSingle();
+    if (errPenilaian) { showDbError("memuat data penilaian", errPenilaian); return; }
+
+    currentPenilaianId = penilaian ? penilaian.id : null;
+    const skorMap = {};
+    if (penilaian) penilaian.penilaian_detail.forEach(d => { skorMap[d.unsur_id] = d.skor; });
+
+    renderTabelUnsur(unsur, skorMap);
+
+    document.getElementById("statusKehadiran").value = penilaian ? penilaian.status_kehadiran : "Offline";
+    document.getElementById("catatan").value = penilaian ? (penilaian.catatan || "") : "";
+
+    cekKehadiran();
+  }
+
+  function renderTabelUnsur(unsur, skorMap) {
+    const tbody = document.getElementById("t");
+    tbody.innerHTML = unsur.map((x, i) => {
+      let r = `<tr><td class="text-center fw-bold text-muted">${i + 1}</td><td>${escapeHtml(x.nama_unsur)}</td>`;
+      for (let j = 1; j <= x.skor_maks; j++) {
+        const checked = skorMap[x.id] === j ? "checked" : "";
+        r += `<td class="score"><input class="form-check-input score-radio" type="radio" name="unsur_${x.id}" value="${j}" data-unsur-id="${x.id}" ${checked} onchange="h()"></td>`;
+      }
+      r += "</tr>";
+      return r;
+    }).join("");
+  }
 
   // Fungsi Menghitung Total Skor
   function h() {
@@ -261,8 +315,45 @@
     }
   }
 
-  function simpanData() {
-    window.print();
+  async function simpanData() {
+    try {
+      const status = document.getElementById("statusKehadiran").value;
+      const catatan = document.getElementById("catatan").value.trim();
+
+      const payload = {
+        penugasan_id: currentPenugasanId,
+        status_kehadiran: status,
+        catatan,
+        submitted_at: new Date().toISOString(),
+      };
+
+      const { data: penilaian, error: errUpsert } = await db
+        .from("penilaian")
+        .upsert(payload, { onConflict: "penugasan_id" })
+        .select("id")
+        .single();
+      if (errUpsert) throw errUpsert;
+      currentPenilaianId = penilaian.id;
+
+      const { error: errDeleteDetail } = await db.from("penilaian_detail").delete().eq("penilaian_id", currentPenilaianId);
+      if (errDeleteDetail) throw errDeleteDetail;
+
+      if (status !== "Tidak Hadir") {
+        const detail = [];
+        document.querySelectorAll(".score-radio:checked").forEach(r => {
+          detail.push({ penilaian_id: currentPenilaianId, unsur_id: parseInt(r.dataset.unsurId, 10), skor: parseInt(r.value, 10) });
+        });
+        if (detail.length) {
+          const { error: errInsertDetail } = await db.from("penilaian_detail").insert(detail);
+          if (errInsertDetail) throw errInsertDetail;
+        }
+      }
+
+      alert("Data penilaian berhasil disimpan!");
+      window.print();
+    } catch (err) {
+      showDbError("menyimpan penilaian", err);
+    }
   }
 </script>
 

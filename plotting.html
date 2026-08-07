@@ -92,7 +92,7 @@
         <!-- TOOLBAR / NAVIGATION -->
         <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
           <div class="d-flex align-items-center gap-2 flex-wrap">
-            <a href="home.html" class="btn-dt">
+            <a href="index.html" class="btn-dt">
               <i class="fa-solid fa-house"></i> Beranda
             </a>
           </div>
@@ -108,11 +108,6 @@
           <div class="col-md-4 col-lg-3">
             <select class="form-select form-select-sm" id="filterFormasi">
               <option value="">-- Semua Formasi / Fakultas --</option>
-              <option value="FT">FT</option>
-              <option value="FMIPA">FMIPA</option>
-              <option value="FIP">FIP</option>
-              <option value="FEB">FEB</option>
-              <option value="FS">FS</option>
             </select>
           </div>
         </div>
@@ -134,136 +129,8 @@
                 <th style="width: 6%;">Aksi</th>
               </tr>
             </thead>
-            <tbody>
-              
-              <!-- BARIS 1 -->
-              <tr>
-                <td class="text-center">1</td>
-                <td><span class="fw-bold text-primary td-kode">2026-FT-001</span></td>
-                <td class="fw-semibold text-dark">Budi Santoso, M.Kom.</td>
-                <td><div class="fw-medium text-dark">Dosen Teknik Informatika</div></td>
-                <td class="text-center"><span class="badge-fakultas">FT</span></td>
-                <td>
-                  <select class="form-select select2-penguji">
-                    <option value="1" selected>Prof. Dr. Ir. Sutrisno, M.T.</option>
-                    <option value="2">Dr. Budi Wahyono, M.Kom.</option>
-                    <option value="3">Dr. Eng. Agus Rahmadi, S.T.</option>
-                    <option value="4">Dra. Endang Sri M., M.Pd.</option>
-                  </select>
-                </td>
-                <td>
-                  <select class="form-select select2-penguji">
-                    <option value="2" selected>Dr. Budi Wahyono, M.Kom.</option>
-                    <option value="1">Prof. Dr. Ir. Sutrisno, M.T.</option>
-                    <option value="3">Dr. Eng. Agus Rahmadi, S.T.</option>
-                    <option value="4">Dra. Endang Sri M., M.Pd.</option>
-                  </select>
-                </td>
-                <td>
-                  <select class="form-select select2-penguji">
-                    <option value="3" selected>Dr. Eng. Agus Rahmadi, S.T.</option>
-                    <option value="1">Prof. Dr. Ir. Sutrisno, M.T.</option>
-                    <option value="2">Dr. Budi Wahyono, M.Kom.</option>
-                    <option value="4">Dra. Endang Sri M., M.Pd.</option>
-                  </select>
-                </td>
-                <td>
-                  <select class="form-select select2-penguji">
-                    <option value="4" selected>Dra. Endang Sri M., M.Pd.</option>
-                    <option value="1">Prof. Dr. Ir. Sutrisno, M.T.</option>
-                    <option value="2">Dr. Budi Wahyono, M.Kom.</option>
-                    <option value="3">Dr. Eng. Agus Rahmadi, S.T.</option>
-                  </select>
-                </td>
-                <!-- Tombol Simpan Per Peserta di Ujung Kanan -->
-                <td class="text-center">
-                  <button class="btn btn-sm btn-primary px-2 py-1 btn-simpan-row">
-                    <i class="fa-solid fa-floppy-disk me-1"></i>
-                  </button>
-                </td>
-              </tr>
-
-              <!-- BARIS 2 -->
-              <tr>
-                <td class="text-center">2</td>
-                <td><span class="fw-bold text-primary td-kode">2026-FM-014</span></td>
-                <td class="fw-semibold text-dark">Siti Nurhaliza, M.Sc.</td>
-                <td><div class="fw-medium text-dark">Dosen Matematika</div></td>
-                <td class="text-center"><span class="badge-fakultas">FMIPA</span></td>
-                <td>
-                  <select class="form-select select2-penguji">
-                    <option value="" disabled>-- Pilih Pewawancara 1 --</option>
-                    <option value="1" selected>Prof. Dr. Ir. Sutrisno, M.T.</option>
-                    <option value="2">Dr. Budi Wahyono, M.Kom.</option>
-                  </select>
-                </td>
-                <td>
-                  <select class="form-select select2-penguji">
-                    <option value="" selected>-- Pilih Pewawancara 2 --</option>
-                    <option value="1">Prof. Dr. Ir. Sutrisno, M.T.</option>
-                    <option value="2">Dr. Budi Wahyono, M.Kom.</option>
-                  </select>
-                </td>
-                <td>
-                  <select class="form-select select2-penguji">
-                    <option value="3" selected>Dr. Eng. Agus Rahmadi, S.T.</option>
-                    <option value="4">Dra. Endang Sri M., M.Pd.</option>
-                  </select>
-                </td>
-                <td>
-                  <select class="form-select select2-penguji">
-                    <option value="4" selected>Dra. Endang Sri M., M.Pd.</option>
-                    <option value="3">Dr. Eng. Agus Rahmadi, S.T.</option>
-                  </select>
-                </td>
-                <!-- Tombol Simpan Per Peserta di Ujung Kanan -->
-                <td class="text-center">
-                  <button class="btn btn-sm btn-primary px-2 py-1 btn-simpan-row">
-                    <i class="fa-solid fa-floppy-disk me-1"></i>
-                  </button>
-                </td>
-              </tr>
-
-              <!-- BARIS 3 -->
-              <tr>
-                <td class="text-center">3</td>
-                <td><span class="fw-bold text-primary td-kode">2026-FI-008</span></td>
-                <td class="fw-semibold text-dark">Rian Hidayat, M.Pd.</td>
-                <td><div class="fw-medium text-dark">Dosen PGSD</div></td>
-                <td class="text-center"><span class="badge-fakultas">FIP</span></td>
-                <td>
-                  <select class="form-select select2-penguji">
-                    <option value="2" selected>Dr. Budi Wahyono, M.Kom.</option>
-                    <option value="1">Prof. Dr. Ir. Sutrisno, M.T.</option>
-                  </select>
-                </td>
-                <td>
-                  <select class="form-select select2-penguji">
-                    <option value="1" selected>Prof. Dr. Ir. Sutrisno, M.T.</option>
-                    <option value="2">Dr. Budi Wahyono, M.Kom.</option>
-                  </select>
-                </td>
-                <td>
-                  <select class="form-select select2-penguji">
-                    <option value="4" selected>Dra. Endang Sri M., M.Pd.</option>
-                    <option value="3">Dr. Eng. Agus Rahmadi, S.T.</option>
-                  </select>
-                </td>
-                <td>
-                  <select class="form-select select2-penguji">
-                    <option value="" selected>-- Pilih Penilai PM 2 --</option>
-                    <option value="3">Dr. Eng. Agus Rahmadi, S.T.</option>
-                    <option value="4">Dra. Endang Sri M., M.Pd.</option>
-                  </select>
-                </td>
-                <!-- Tombol Simpan Per Peserta di Ujung Kanan -->
-                <td class="text-center">
-                  <button class="btn btn-sm btn-primary px-2 py-1 btn-simpan-row">
-                    <i class="fa-solid fa-floppy-disk me-1"></i>
-                  </button>
-                </td>
-              </tr>
-
+            <tbody id="tbodyPlotting">
+              <tr><td colspan="10" class="text-center text-muted py-4">Memuat data...</td></tr>
             </tbody>
           </table>
         </div>
@@ -284,25 +151,23 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <!-- Select2 JS -->
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/supabase-client.js"></script>
 
   <script>
-    $(document).ready(function() {
-      // Inisialisasi Select2 pada Dropdown Penguji
-      $('.select2-penguji').select2({
-        theme: 'bootstrap-5',
-        width: '100%',
-        placeholder: '-- Pilih Penguji --',
-        allowClear: true
-      });
+    let pengujiPewawancara = [];
+    let pengujiPraktik = [];
 
-      // Event Simpan Per Peserta
-      $(document).on('click', '.btn-simpan-row', function() {
-        const row = $(this).closest('tr');
-        const kodePeserta = row.find('.td-kode').text();
-        
-        // Notifikasi Simpan
-        alert('Data plotting untuk peserta [' + kodePeserta + '] berhasil disimpan!');
-      });
+    $(document).ready(async function() {
+      if (!window.db) return;
+
+      await loadFakultasFilter();
+      await loadPengujiLists();
+      await loadPlotting();
+
+      // Filter Fakultas -> query ulang
+      $('#filterFormasi').on('change', loadPlotting);
 
       // Live Search Tabel
       $('#inputSearch').on('keyup', function() {
@@ -312,14 +177,116 @@
         });
       });
 
-      // Filter Formasi / Fakultas
-      $('#filterFormasi').on('change', function() {
-        const value = $(this).val().toLowerCase();
-        $('#tablePlotting tbody tr').filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
-        });
+      // Event Simpan Per Peserta
+      $(document).on('click', '.btn-simpan-row', async function() {
+        const row = $(this).closest('tr');
+        const pesertaId = row.data('id');
+        const kodePeserta = row.data('kode');
+
+        const slots = [
+          { jenis_sesi: 'Wawancara', urutan: 1, penguji_id: row.find('.sel-pewawancara-1').val() },
+          { jenis_sesi: 'Wawancara', urutan: 2, penguji_id: row.find('.sel-pewawancara-2').val() },
+          { jenis_sesi: 'Praktik Mengajar', urutan: 1, penguji_id: row.find('.sel-praktik-1').val() },
+          { jenis_sesi: 'Praktik Mengajar', urutan: 2, penguji_id: row.find('.sel-praktik-2').val() },
+        ].filter(s => s.penguji_id); // slot kosong tidak diproses (tidak menghapus plotting lama)
+
+        if (!slots.length) { alert('Pilih minimal satu penguji sebelum menyimpan.'); return; }
+
+        try {
+          for (const s of slots) {
+            const { error } = await db.from('penugasan').upsert({
+              peserta_id: pesertaId,
+              jenis_sesi: s.jenis_sesi,
+              urutan: s.urutan,
+              penguji_id: parseInt(s.penguji_id, 10),
+            }, { onConflict: 'peserta_id,jenis_sesi,urutan' });
+            if (error) throw error;
+          }
+          alert('Data plotting untuk peserta [' + kodePeserta + '] berhasil disimpan!');
+        } catch (err) {
+          showDbError('menyimpan plotting', err);
+        }
       });
     });
+
+    async function loadFakultasFilter() {
+      const { data, error } = await db.from('fakultas').select('*').order('nama');
+      if (error) { showDbError('memuat data fakultas', error); return; }
+      const opts = '<option value="">-- Semua Formasi / Fakultas --</option>' +
+        data.map(f => `<option value="${f.id}">${escapeHtml(f.nama)}</option>`).join('');
+      $('#filterFormasi').html(opts);
+    }
+
+    async function loadPengujiLists() {
+      const { data, error } = await db
+        .from('penguji')
+        .select('id, nama, penguji_peran(peran)')
+        .order('nama');
+      if (error) { showDbError('memuat data penguji', error); return; }
+      pengujiPewawancara = data.filter(p => p.penguji_peran.some(r => r.peran === 'Pewawancara'));
+      pengujiPraktik = data.filter(p => p.penguji_peran.some(r => r.peran === 'Penilai Praktik Mengajar'));
+    }
+
+    async function loadPlotting() {
+      let query = db
+        .from('peserta')
+        .select('id, kode_peserta, nama, formasi_jabatan, fakultas(id, kode), penugasan(jenis_sesi, urutan, penguji_id)')
+        .order('kode_peserta');
+      const fakultasId = $('#filterFormasi').val();
+      if (fakultasId) query = query.eq('fakultas_id', fakultasId);
+
+      const { data, error } = await query;
+      if (error) { showDbError('memuat data plotting', error); return; }
+      renderPlotting(data);
+    }
+
+    function renderPlotting(rows) {
+      const tbody = document.getElementById('tbodyPlotting');
+      if (!rows.length) {
+        tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted py-4">Belum ada data peserta.</td></tr>';
+        return;
+      }
+
+      const cariAssigned = (penugasan, jenis, urutan) => {
+        const pu = penugasan.find(p => p.jenis_sesi === jenis && p.urutan === urutan);
+        return pu ? pu.penguji_id : '';
+      };
+      const buildOptions = (list, selectedId) =>
+        '<option value="">-- Pilih Penguji --</option>' +
+        list.map(p => `<option value="${p.id}" ${String(p.id) === String(selectedId) ? 'selected' : ''}>${escapeHtml(p.nama)}</option>`).join('');
+
+      tbody.innerHTML = rows.map((r, i) => {
+        const w1 = cariAssigned(r.penugasan, 'Wawancara', 1);
+        const w2 = cariAssigned(r.penugasan, 'Wawancara', 2);
+        const pm1 = cariAssigned(r.penugasan, 'Praktik Mengajar', 1);
+        const pm2 = cariAssigned(r.penugasan, 'Praktik Mengajar', 2);
+
+        return `
+        <tr data-id="${r.id}" data-kode="${escapeHtml(r.kode_peserta)}">
+          <td class="text-center">${i + 1}</td>
+          <td><span class="fw-bold text-primary td-kode">${escapeHtml(r.kode_peserta)}</span></td>
+          <td class="fw-semibold text-dark">${escapeHtml(r.nama)}</td>
+          <td><div class="fw-medium text-dark">${escapeHtml(r.formasi_jabatan)}</div></td>
+          <td class="text-center"><span class="badge-fakultas">${escapeHtml(r.fakultas ? r.fakultas.kode : '-')}</span></td>
+          <td><select class="form-select select2-penguji sel-pewawancara-1">${buildOptions(pengujiPewawancara, w1)}</select></td>
+          <td><select class="form-select select2-penguji sel-pewawancara-2">${buildOptions(pengujiPewawancara, w2)}</select></td>
+          <td><select class="form-select select2-penguji sel-praktik-1">${buildOptions(pengujiPraktik, pm1)}</select></td>
+          <td><select class="form-select select2-penguji sel-praktik-2">${buildOptions(pengujiPraktik, pm2)}</select></td>
+          <td class="text-center">
+            <button class="btn btn-sm btn-primary px-2 py-1 btn-simpan-row">
+              <i class="fa-solid fa-floppy-disk me-1"></i>
+            </button>
+          </td>
+        </tr>`;
+      }).join('');
+
+      $('.select2-penguji').select2({
+        theme: 'bootstrap-5',
+        width: '100%',
+        placeholder: '-- Pilih Penguji --',
+        allowClear: true
+      });
+    }
   </script>
 </body>
 </html>

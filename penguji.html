@@ -81,12 +81,18 @@
         <!-- Bar Navigasi & Pencarian -->
         <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
           <div class="d-flex flex-wrap gap-1">
-            <a href="home.html" class="btn-dt">
+            <a href="index.html" class="btn-dt">
               <i class="fa-solid fa-house"></i> Beranda
             </a>
             <button class="btn btn-sm btn-primary rounded-2 px-3 fw-semibold" data-bs-toggle="modal" data-bs-target="#modalTambahDosen">
               <i class="fa-solid fa-user-plus me-1"></i> Tambah Dosen Penguji
             </button>
+            <button class="btn btn-sm btn-outline-success rounded-2 px-3 fw-semibold" data-bs-toggle="modal" data-bs-target="#modalImportPenguji">
+              <i class="fa-solid fa-file-import me-1"></i> Import Excel
+            </button>
+            <a href="template-data-penguji.xlsx" download class="btn-dt text-success">
+              <i class="fa-solid fa-download"></i> Download Template
+            </a>
           </div>
 
           <div class="d-flex align-items-center gap-2">
@@ -126,33 +132,8 @@
                     <th style="width: 13%;" class="text-center">Aksi</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <td class="text-center">1</td>
-                    <td class="fw-bold td-nip">197508122003121001</td>
-                    <td class="fw-semibold text-dark td-nama">Prof. Dr. Ir. Sutrisno, M.T.</td>
-                    <td class="td-jafung">Guru Besar / Profesor</td>
-                    <td class="text-center">
-                      <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1">Pewawancara</span>
-                    </td>
-                    <td class="text-center">
-                      <button class="btn btn-sm btn-outline-primary border-0 btn-edit-dosen" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
-                      <button class="btn btn-sm btn-outline-danger border-0" title="Hapus" onclick="if(confirm('Hapus dosen ini?')) $(this).closest('tr').remove()"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="text-center">2</td>
-                    <td class="fw-bold td-nip">198203152008121002</td>
-                    <td class="fw-semibold text-dark td-nama">Dr. Budi Wahyono, M.Kom.</td>
-                    <td class="td-jafung">Lektor Kepala</td>
-                    <td class="text-center">
-                      <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1">Pewawancara</span>
-                    </td>
-                    <td class="text-center">
-                      <button class="btn btn-sm btn-outline-primary border-0 btn-edit-dosen" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
-                      <button class="btn btn-sm btn-outline-danger border-0" title="Hapus" onclick="if(confirm('Hapus dosen ini?')) $(this).closest('tr').remove()"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                  </tr>
+                <tbody id="tbodyWawancara">
+                  <tr><td colspan="6" class="text-center text-muted py-4">Memuat data...</td></tr>
                 </tbody>
               </table>
             </div>
@@ -172,20 +153,8 @@
                     <th style="width: 13%;" class="text-center">Aksi</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <td class="text-center">1</td>
-                    <td class="fw-bold td-nip">197911042005011003</td>
-                    <td class="fw-semibold text-dark td-nama">Dr. Eng. Agus Rahmadi, S.T., M.T.</td>
-                    <td class="td-jafung">Lektor Kepala</td>
-                    <td class="text-center">
-                      <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1">Penilai Praktik Mengajar</span>
-                    </td>
-                    <td class="text-center">
-                      <button class="btn btn-sm btn-outline-primary border-0 btn-edit-dosen" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
-                      <button class="btn btn-sm btn-outline-danger border-0" title="Hapus" onclick="if(confirm('Hapus dosen ini?')) $(this).closest('tr').remove()"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                  </tr>
+                <tbody id="tbodyPraktik">
+                  <tr><td colspan="6" class="text-center text-muted py-4">Memuat data...</td></tr>
                 </tbody>
               </table>
             </div>
@@ -209,15 +178,15 @@
           <div class="modal-body small">
             <div class="mb-3">
               <label class="form-label fw-semibold">NIP Dosen</label>
-              <input type="text" class="form-control form-control-sm" placeholder="Masukkan NIP (18 Digit)" required>
+              <input type="text" id="tambahNip" class="form-control form-control-sm" placeholder="Masukkan NIP (18 Digit)" required>
             </div>
             <div class="mb-3">
               <label class="form-label fw-semibold">Nama Lengkap Dosen (Beserta Gelar)</label>
-              <input type="text" class="form-control form-control-sm" placeholder="Contoh: Prof. Dr. Ahmad, M.Pd." required>
+              <input type="text" id="tambahNamaDosen" class="form-control form-control-sm" placeholder="Contoh: Prof. Dr. Ahmad, M.Pd." required>
             </div>
             <div class="mb-3">
               <label class="form-label fw-semibold">Jabatan Fungsional</label>
-              <select class="form-select form-select-sm" required>
+              <select id="tambahJafung" class="form-select form-select-sm" required>
                 <option value="" selected disabled>-- Pilih Jabatan --</option>
                 <option value="Guru Besar / Profesor">Guru Besar / Profesor</option>
                 <option value="Lektor Kepala">Lektor Kepala</option>
@@ -294,6 +263,48 @@
     </div>
   </div>
 
+  <!-- ==================== MODAL IMPORT EXCEL ==================== -->
+  <div class="modal fade" id="modalImportPenguji" tabindex="-1" aria-labelledby="modalImportPengujiLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+      <div class="modal-content">
+        <div class="modal-header bg-success text-white">
+          <h6 class="modal-title fw-bold" id="modalImportPengujiLabel"><i class="fa-solid fa-file-import me-2"></i>Import Data Dosen Penguji dari Excel</h6>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body small">
+          <p class="text-secondary mb-2">
+            Gunakan <a href="template-data-penguji.xlsx" download>template Excel</a> yang sudah disediakan (sheet "Data Penguji"). Pilih file, periksa hasil pratinjau, lalu klik Import.
+          </p>
+          <input type="file" id="fileImportPenguji" class="form-control form-control-sm mb-3" accept=".xlsx,.xls">
+          <div id="importPengujiSummary" class="mb-2 fw-semibold"></div>
+          <div class="table-responsive border rounded-3" style="max-height: 350px; overflow-y: auto;">
+            <table class="table table-sm table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Baris</th>
+                  <th>NIP</th>
+                  <th>Nama</th>
+                  <th>Jabatan Fungsional</th>
+                  <th>Peran</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyImportPengujiPreview">
+                <tr><td colspan="6" class="text-center text-muted py-3">Pilih file Excel untuk melihat pratinjau.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer bg-light">
+          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="button" id="btnKonfirmasiImportPenguji" class="btn btn-sm btn-success px-3 fw-semibold" disabled onclick="konfirmasiImportPenguji()">
+            <i class="fa-solid fa-upload me-1"></i> Import Data Valid
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ==================== FOOTER ==================== -->
   <footer class="bg-white border-top py-3 text-center text-secondary small mt-auto">
     <div class="container">
@@ -304,9 +315,21 @@
   <!-- Scripts -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/supabase-client.js"></script>
+  <!-- SheetJS (baca file Excel) -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
   <script>
-    $(document).ready(function() {
+    let currentEditId = null;
+    let importPengujiRows = [];
+
+    $(document).ready(async function() {
+      if (!window.db) return;
+
+      await loadPenguji();
+
       // Live Search
       $('#inputSearch').on('keyup', function() {
         const value = $(this).val().toLowerCase();
@@ -315,50 +338,278 @@
         });
       });
 
-      let targetRow = null;
+      // Buka Modal Edit & Isi Data
       $(document).on('click', '.btn-edit-dosen', function() {
-        targetRow = $(this).closest('tr');
-        const nip = targetRow.find('.td-nip').text().trim();
-        const nama = targetRow.find('.td-nama').text().trim();
-        const jafung = targetRow.find('.td-jafung').text().trim();
-       
-        const activeTab = $('#pengujiTab .nav-link.active').attr('id');
+        const row = $(this).closest('tr');
+        currentEditId = row.data('id');
 
-        $('#editNip').val(nip);
-        $('#editNama').val(nama);
-        $('#editJafung').val(jafung);
-
-        if (activeTab === 'wawancara-tab') {
-          $('#editRoleWawancara').prop('checked', true);
-          $('#editRolePraktik').prop('checked', false);
-        } else {
-          $('#editRoleWawancara').prop('checked', false);
-          $('#editRolePraktik').prop('checked', true);
-        }
+        $('#editNip').val(row.find('.td-nip').text().trim());
+        $('#editNama').val(row.find('.td-nama').text().trim());
+        $('#editJafung').val(row.find('.td-jafung').text().trim());
+        $('#editRoleWawancara').prop('checked', row.data('peran-wawancara') === true || row.data('peran-wawancara') === 'true');
+        $('#editRolePraktik').prop('checked', row.data('peran-praktik') === true || row.data('peran-praktik') === 'true');
 
         $('#modalEditDosen').modal('show');
       });
 
       // Submit Form Tambah
-      $('#formTambahDosen').on('submit', function(e) {
+      $('#formTambahDosen').on('submit', async function(e) {
         e.preventDefault();
-        alert('Dosen penguji baru berhasil ditambahkan!');
-        $('#modalTambahDosen').modal('hide');
-        this.reset();
+        try {
+          const { data: penguji, error: errPenguji } = await db.from('penguji').insert({
+            nip: $('#tambahNip').val().trim(),
+            nama: $('#tambahNamaDosen').val().trim(),
+            jabatan_fungsional: $('#tambahJafung').val(),
+          }).select('id').single();
+          if (errPenguji) throw errPenguji;
+
+          const peran = [];
+          if ($('#addRoleWawancara').is(':checked')) peran.push({ penguji_id: penguji.id, peran: 'Pewawancara' });
+          if ($('#addRolePraktik').is(':checked')) peran.push({ penguji_id: penguji.id, peran: 'Penilai Praktik Mengajar' });
+          if (peran.length) {
+            const { error: errPeran } = await db.from('penguji_peran').insert(peran);
+            if (errPeran) throw errPeran;
+          }
+
+          alert('Dosen penguji baru berhasil ditambahkan!');
+          bootstrap.Modal.getInstance(document.getElementById('modalTambahDosen')).hide();
+          this.reset();
+          loadPenguji();
+        } catch (err) {
+          showDbError('menambahkan dosen penguji', err);
+        }
       });
 
       // Submit Form Edit
-      $('#formEditDosen').on('submit', function(e) {
+      $('#formEditDosen').on('submit', async function(e) {
         e.preventDefault();
-        if (targetRow) {
-          targetRow.find('.td-nip').text($('#editNip').val());
-          targetRow.find('.td-nama').text($('#editNama').val());
-          targetRow.find('.td-jafung').text($('#editJafung').val());
+        try {
+          const { error: errUpdate } = await db.from('penguji').update({
+            nip: $('#editNip').val().trim(),
+            nama: $('#editNama').val().trim(),
+            jabatan_fungsional: $('#editJafung').val(),
+          }).eq('id', currentEditId);
+          if (errUpdate) throw errUpdate;
+
+          // Selaraskan peran: hapus semua lalu tulis ulang sesuai checkbox
+          const { error: errDelete } = await db.from('penguji_peran').delete().eq('penguji_id', currentEditId);
+          if (errDelete) throw errDelete;
+
+          const peran = [];
+          if ($('#editRoleWawancara').is(':checked')) peran.push({ penguji_id: currentEditId, peran: 'Pewawancara' });
+          if ($('#editRolePraktik').is(':checked')) peran.push({ penguji_id: currentEditId, peran: 'Penilai Praktik Mengajar' });
+          if (peran.length) {
+            const { error: errInsert } = await db.from('penguji_peran').insert(peran);
+            if (errInsert) throw errInsert;
+          }
+
+          alert('Data dosen penguji berhasil diperbarui!');
+          $('#modalEditDosen').modal('hide');
+          loadPenguji();
+        } catch (err) {
+          showDbError('memperbarui dosen penguji', err);
         }
-        alert('Data dosen penguji berhasil diperbarui!');
-        $('#modalEditDosen').modal('hide');
+      });
+
+      // Hapus Dosen
+      $(document).on('click', '.btn-hapus-dosen', async function() {
+        const row = $(this).closest('tr');
+        const id = row.data('id');
+        if (!confirm('Hapus dosen ini?')) return;
+        const { error } = await db.from('penguji').delete().eq('id', id);
+        if (error) { showDbError('menghapus dosen penguji', error); return; }
+        loadPenguji();
+      });
+
+      // Import Excel: pilih file -> parse & pratinjau
+      $('#fileImportPenguji').on('change', async function(e) {
+        const file = e.target.files[0];
+        if (file) await prosesFileImportPenguji(file);
+      });
+
+      // Reset modal import saat ditutup
+      $('#modalImportPenguji').on('hidden.bs.modal', function() {
+        importPengujiRows = [];
+        $('#fileImportPenguji').val('');
+        $('#importPengujiSummary').html('');
+        $('#tbodyImportPengujiPreview').html('<tr><td colspan="6" class="text-center text-muted py-3">Pilih file Excel untuk melihat pratinjau.</td></tr>');
+        $('#btnKonfirmasiImportPenguji').prop('disabled', true);
       });
     });
+
+    async function loadPenguji() {
+      const { data, error } = await db
+        .from('penguji')
+        .select('id, nip, nama, jabatan_fungsional, penguji_peran(peran)')
+        .order('nama');
+
+      if (error) { showDbError('memuat data dosen penguji', error); return; }
+
+      const pewawancara = data.filter(p => p.penguji_peran.some(r => r.peran === 'Pewawancara'));
+      const penilaiPraktik = data.filter(p => p.penguji_peran.some(r => r.peran === 'Penilai Praktik Mengajar'));
+
+      renderDosen('tbodyWawancara', pewawancara, 'Pewawancara', 'bg-primary-subtle text-primary border-primary-subtle');
+      renderDosen('tbodyPraktik', penilaiPraktik, 'Penilai Praktik Mengajar', 'bg-warning-subtle text-warning-emphasis border-warning-subtle');
+    }
+
+    function renderDosen(tbodyId, rows, labelPeran, badgeClass) {
+      const tbody = document.getElementById(tbodyId);
+      if (!rows.length) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">Belum ada dosen dengan peran ini.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = rows.map((p, i) => {
+        const isWawancara = p.penguji_peran.some(r => r.peran === 'Pewawancara');
+        const isPraktik = p.penguji_peran.some(r => r.peran === 'Penilai Praktik Mengajar');
+        return `
+        <tr data-id="${p.id}" data-peran-wawancara="${isWawancara}" data-peran-praktik="${isPraktik}">
+          <td class="text-center">${i + 1}</td>
+          <td class="fw-bold td-nip">${escapeHtml(p.nip)}</td>
+          <td class="fw-semibold text-dark td-nama">${escapeHtml(p.nama)}</td>
+          <td class="td-jafung">${escapeHtml(p.jabatan_fungsional)}</td>
+          <td class="text-center">
+            <span class="badge ${badgeClass} border px-2 py-1">${labelPeran}</span>
+          </td>
+          <td class="text-center">
+            <button class="btn btn-sm btn-outline-primary border-0 btn-edit-dosen" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
+            <button class="btn btn-sm btn-outline-danger border-0 btn-hapus-dosen" title="Hapus"><i class="fa-solid fa-trash"></i></button>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+
+    // ==================== IMPORT EXCEL ====================
+    const JAFUNG_VALID = ['Guru Besar / Profesor', 'Lektor Kepala', 'Lektor', 'Asisten Ahli'];
+    const FIELD_MAP_IMPORT_PENGUJI = {
+      'nip': 'nip',
+      'nama lengkap (beserta gelar)': 'nama',
+      'jabatan fungsional': 'jabatan_fungsional',
+      'peran pewawancara (ya/tidak)': 'peran_pewawancara',
+      'peran penilai praktik mengajar (ya/tidak)': 'peran_praktik',
+    };
+
+    async function prosesFileImportPenguji(file) {
+      $('#importPengujiSummary').html('<span class="text-muted">Memproses file...</span>');
+      try {
+        const buf = await file.arrayBuffer();
+        const wb = XLSX.read(buf, { type: 'array' });
+        const sheetName = wb.SheetNames.includes('Data Penguji') ? 'Data Penguji' : wb.SheetNames[0];
+        const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { header: 1, defval: '' });
+
+        const headerIdx = rows.findIndex(r => r.some(cell => String(cell).toLowerCase().includes('nip')));
+        if (headerIdx === -1) {
+          $('#importPengujiSummary').html('<span class="text-danger">Header "NIP" tidak ditemukan. Gunakan template yang disediakan.</span>');
+          importPengujiRows = [];
+          renderPreviewImportPenguji();
+          return;
+        }
+
+        const headerRow = rows[headerIdx];
+        const colToField = headerRow.map(h => FIELD_MAP_IMPORT_PENGUJI[String(h).replace(/\*$/, '').trim().toLowerCase()] || null);
+
+        const parsed = [];
+        rows.slice(headerIdx + 1).forEach((r, idx) => {
+          const obj = { _baris: headerIdx + idx + 2 };
+          colToField.forEach((field, i) => { if (field) obj[field] = String(r[i] ?? '').trim(); });
+
+          const kosong = !obj.nip && !obj.nama;
+          const contoh = obj.nip === '197508122003121001' && obj.nama === 'Prof. Dr. Ir. Sutrisno, M.T.';
+          if (kosong || contoh) return;
+
+          parsed.push(obj);
+        });
+
+        importPengujiRows = parsed.map(validasiBarisImportPenguji);
+        renderPreviewImportPenguji();
+      } catch (err) {
+        $('#importPengujiSummary').html('<span class="text-danger">Gagal membaca file: ' + escapeHtml(err.message) + '</span>');
+      }
+    }
+
+    function validasiBarisImportPenguji(row) {
+      const errors = [];
+      if (!row.nip) errors.push('NIP kosong');
+      if (!row.nama) errors.push('Nama kosong');
+      if (!JAFUNG_VALID.includes(row.jabatan_fungsional)) errors.push('Jabatan Fungsional tidak valid');
+
+      const pewawancara = String(row.peran_pewawancara || '').trim().toLowerCase() === 'ya';
+      const praktik = String(row.peran_praktik || '').trim().toLowerCase() === 'ya';
+      if (!pewawancara && !praktik) errors.push('Pilih minimal satu peran (Ya pada salah satu kolom)');
+
+      return { ...row, peranList: [pewawancara && 'Pewawancara', praktik && 'Penilai Praktik Mengajar'].filter(Boolean), errors };
+    }
+
+    function renderPreviewImportPenguji() {
+      const tbody = document.getElementById('tbodyImportPengujiPreview');
+      if (!importPengujiRows.length) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-3">Tidak ada baris data yang terdeteksi.</td></tr>';
+        $('#importPengujiSummary').html('<span class="text-muted">Tidak ada baris data untuk diimpor (isi dulu template mulai baris 6).</span>');
+        $('#btnKonfirmasiImportPenguji').prop('disabled', true);
+        return;
+      }
+
+      tbody.innerHTML = importPengujiRows.map(r => `
+        <tr>
+          <td>${r._baris}</td>
+          <td>${escapeHtml(r.nip || '-')}</td>
+          <td>${escapeHtml(r.nama || '-')}</td>
+          <td>${escapeHtml(r.jabatan_fungsional || '-')}</td>
+          <td>${escapeHtml(r.peranList.join(', ') || '-')}</td>
+          <td>${r.errors.length
+            ? `<span class="badge bg-danger-subtle text-danger border border-danger-subtle" title="${escapeHtml(r.errors.join('; '))}"><i class="fa-solid fa-circle-xmark me-1"></i>${escapeHtml(r.errors.join(', '))}</span>`
+            : '<span class="badge bg-success-subtle text-success border border-success-subtle"><i class="fa-solid fa-circle-check me-1"></i>Valid</span>'}
+          </td>
+        </tr>
+      `).join('');
+
+      const validCount = importPengujiRows.filter(r => !r.errors.length).length;
+      const errorCount = importPengujiRows.length - validCount;
+      $('#importPengujiSummary').html(
+        `<span class="text-success">${validCount} baris valid</span>` +
+        (errorCount ? ` &middot; <span class="text-danger">${errorCount} baris bermasalah (akan dilewati)</span>` : '')
+      );
+      $('#btnKonfirmasiImportPenguji').prop('disabled', validCount === 0);
+    }
+
+    async function konfirmasiImportPenguji() {
+      const validRows = importPengujiRows.filter(r => !r.errors.length);
+      if (!validRows.length) return;
+
+      const $btn = $('#btnKonfirmasiImportPenguji');
+      $btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin me-1"></i> Mengimpor...');
+
+      let sukses = 0;
+      const gagal = [];
+      for (const r of validRows) {
+        try {
+          const { data: penguji, error: errPenguji } = await db.from('penguji').insert({
+            nip: r.nip,
+            nama: r.nama,
+            jabatan_fungsional: r.jabatan_fungsional,
+          }).select('id').single();
+          if (errPenguji) throw errPenguji;
+
+          const peran = r.peranList.map(p => ({ penguji_id: penguji.id, peran: p }));
+          const { error: errPeran } = await db.from('penguji_peran').insert(peran);
+          if (errPeran) throw errPeran;
+
+          sukses++;
+        } catch (err) {
+          gagal.push(`Baris ${r._baris} (${r.nip}): ${err.message}`);
+        }
+      }
+
+      $btn.html('<i class="fa-solid fa-upload me-1"></i> Import Data Valid');
+
+      alert(`Import selesai: ${sukses} dosen penguji berhasil ditambahkan.` + (gagal.length ? `\n\nGagal (${gagal.length}):\n` + gagal.join('\n') : ''));
+
+      if (sukses > 0) {
+        bootstrap.Modal.getInstance(document.getElementById('modalImportPenguji')).hide();
+        loadPenguji();
+      } else {
+        $btn.prop('disabled', false);
+      }
+    }
   </script>
 </body>
 </html>

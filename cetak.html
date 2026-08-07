@@ -50,6 +50,22 @@
       color: #212529;
     }
 
+    #previewCetakArea {
+      background: #e9ecef;
+      border-radius: 10px;
+      padding: 16px;
+      max-height: 75vh;
+      overflow-y: auto;
+      text-align: center;
+    }
+    #previewCetakArea canvas {
+      max-width: 100%;
+      height: auto;
+      box-shadow: 0 2px 10px rgba(0,0,0,.15);
+      margin-bottom: 12px;
+      background: #fff;
+    }
+
     @media print {
       body { background: #ffffff !important; }
       .page-header { background: none !important; color: #000 !important; padding: 0 !important; }
@@ -77,13 +93,18 @@
         <!-- Toolbar Buttons & Search -->
         <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
           <div class="dt-buttons d-flex gap-1">
+            <a href="index.html" class="btn btn-outline-primary btn-dt fw-semibold me-2">
+              <i class="fa-solid fa-house me-1"></i> Beranda
+            </a>
             <button class="btn btn-dt"><i class="fa-solid fa-copy me-1"></i> Copy</button>
             <button class="btn btn-dt"><i class="fa-solid fa-file-csv me-1"></i> CSV</button>
             <button class="btn btn-dt"><i class="fa-solid fa-file-excel me-1 text-success"></i> Excel</button>
             <button class="btn btn-dt"><i class="fa-solid fa-file-pdf me-1 text-danger"></i> PDF</button>
             <button class="btn btn-dt" onclick="window.print()"><i class="fa-solid fa-print me-1"></i> Print</button>
           </div>
-          <div class="dt-search d-flex align-items-center gap-2">
+          <div class="dt-search d-flex align-items-center gap-2 flex-wrap">
+            <label for="tanggalCetak" class="mb-0 text-secondary small fw-semibold">Tanggal Form :</label>
+            <input type="date" id="tanggalCetak" class="form-control form-control-sm rounded-2" style="width: 160px;">
             <label for="searchData" class="mb-0 text-secondary small fw-semibold">Cari :</label>
             <input type="text" id="searchData" class="form-control form-control-sm rounded-2" style="width: 220px;" placeholder="Ketik kata kunci...">
           </div>
@@ -111,35 +132,8 @@
                 <th>II</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td class="text-center fw-semibold">1</td>
-                <td class="text-center"><span class="badge bg-secondary bg-opacity-10 text-secondary">PSR-001</span></td>
-                <td class="fw-bold text-dark">Dummy Peserta</td>
-                <td>S1 Sastra Mesin</td>
-                <td>Jakarta</td>
-                <td>Teknik</td>
-                <td>Pewawancara 1</td>
-                <td>Pewawancara 2</td>
-                <td>Penilai 1</td>
-                <td>Penilai 2</td>
-                <td class="text-center">
-                  <div class="d-flex justify-content-center gap-1">
-                    <button class="btn btn-sm btn-primary fw-semibold" onclick="window.print()" title="Cetak Form Pewawancara 1">
-                      <i class="fa-solid fa-print me-1"></i> Wawancara I
-                    </button>
-                    <button class="btn btn-sm btn-info text-white fw-semibold" onclick="window.print()" title="Cetak Form Pewawancara 2">
-                      <i class="fa-solid fa-print me-1"></i> Wawancara II
-                    </button>
-                    <button class="btn btn-sm btn-warning text-dark fw-semibold" onclick="window.print()" title="Cetak Form Penilai 1">
-                      <i class="fa-solid fa-print me-1"></i> Mengajar I
-                    </button>
-                    <button class="btn btn-sm btn-success fw-semibold" onclick="window.print()" title="Cetak Form Penilai 2">
-                      <i class="fa-solid fa-print me-1"></i> Mengajar II
-                    </button>
-                  </div>
-                </td>
-              </tr>
+            <tbody id="tbodyCetak">
+              <tr><td colspan="11" class="text-center text-muted py-4">Memuat data...</td></tr>
             </tbody>
           </table>
         </div>
@@ -160,7 +154,319 @@
     </div>
   </div>
 
+  <!-- ==================== MODAL PRATINJAU DOKUMEN ==================== -->
+  <div class="modal fade" id="modalPreviewCetak" tabindex="-1" aria-labelledby="previewCetakLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h6 class="modal-title fw-bold" id="previewCetakLabel"><i class="fa-solid fa-file-word me-2"></i>Pratinjau Dokumen</h6>
+          <button type="button" class="btn-close btn-close-white no-print" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="previewCetakArea">
+            <div id="previewCetakLoading" class="text-muted py-5">
+              <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+              <p class="mt-2 mb-0">Menyiapkan pratinjau...</p>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer bg-light">
+          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal" title="Tutup">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+          <button type="button" id="btnBukaTabBaru" class="btn btn-sm btn-outline-primary" title="Buka di Tab Baru">
+            <i class="fa-solid fa-up-right-from-square"></i>
+          </button>
+          <button type="button" id="btnUnduhWordPreview" class="btn btn-sm btn-outline-primary" title="Unduh Word (.docx)">
+            <i class="fa-solid fa-file-word"></i>
+          </button>
+          <button type="button" id="btnUnduhPdfPreview" class="btn btn-sm btn-primary" title="Unduh PDF (A4)">
+            <i class="fa-solid fa-file-pdf"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <!-- Bootstrap 5 JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/supabase-client.js"></script>
+  <!-- PizZip + Docxtemplater (isi blangko Word otomatis di browser, untuk tombol Unduh Word) -->
+  <script src="https://cdn.jsdelivr.net/npm/pizzip@3.1.7/dist/pizzip.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docxtemplater@3.44.0/build/docxtemplater.js"></script>
+  <!-- pdf-lib (isi PDF asli langsung, hasil pratinjau/print identik dengan file asli) -->
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <!-- PDF.js (render PDF ke canvas agar pratinjau tampil di browser manapun, tanpa bergantung plugin PDF bawaan) -->
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => { if (window.db) loadCetak(); });
+
+    // Koordinat field (dalam titik PDF, sumbu Y dari ATAS halaman) hasil pengukuran
+    // langsung pada tiap blangko kosong. x = posisi kiri teks; *YTop = posisi baseline
+    // baris dari atas halaman.
+    // Ukuran font (pt) diukur dari teks asli tiap blangko, lalu dinaikkan sedikit
+    // (~1pt) karena font standar PDF (Times-Roman) tampil sedikit lebih kecil
+    // secara visual dibanding TimesNewRomanPSMT asli pada ukuran nominal yang sama.
+    // Tidak dinaikkan terlalu jauh supaya tidak menabrak border sel di sekitarnya.
+    const FORM_CONFIG = {
+      'assets/forms/form-wawancara-1-blank.pdf': {
+        docxTemplate: 'assets/forms/form-wawancara-1.docx',
+        ident: { x: 210, namaYTop: 149.7, pendYTop: 166.7, tempatYTop: 188.7, size: 13 },
+        sign: { x: 310.3, namaYTop: 598.6, nipYTop: 612.4, size: 13, whiteout: { x0: 304, x1: 530, yTop0: 588, yTop1: 620 }, tanggalX: 358, tanggalYTop: 506.0, tanggalSize: 13.5 },
+      },
+      'assets/forms/form-wawancara-2-blank.pdf': {
+        docxTemplate: 'assets/forms/form-wawancara-2.docx',
+        ident: { x: 210, namaYTop: 149.7, pendYTop: 169.7, tempatYTop: 189.5, size: 13 },
+        sign: { x: 303.2, namaYTop: 599.3, nipYTop: 613.1, size: 13, whiteout: { x0: 297, x1: 525, yTop0: 589, yTop1: 621 }, tanggalX: 351, tanggalYTop: 506.6, tanggalSize: 13.5 },
+      },
+      'assets/forms/form-microteaching-1-blank.pdf': {
+        docxTemplate: 'assets/forms/form-microteaching-1.docx',
+        ident: { x: 213, namaYTop: 157.5, pendYTop: 177.5, tempatYTop: 197.3, size: 13 },
+        sign: { x: 324.4, namaYTop: 599.8, nipYTop: 614.8, size: 13.5, whiteout: { x0: 318, x1: 545, yTop0: 588, yTop1: 622 }, tanggalX: 372, tanggalYTop: 497.6, tanggalSize: 13.5 },
+      },
+      'assets/forms/form-microteaching-2-blank.pdf': {
+        docxTemplate: 'assets/forms/form-microteaching-2.docx',
+        ident: { x: 210, namaYTop: 157.5, pendYTop: 177.1, tempatYTop: 196.5, size: 13 },
+        sign: { x: 324.4, namaYTop: 599.0, nipYTop: 614.0, size: 13.5, whiteout: { x0: 318, x1: 545, yTop0: 588, yTop1: 622 }, tanggalX: 372, tanggalYTop: 496.9, tanggalSize: 13.5 },
+      },
+    };
+
+    const NAMA_BULAN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+    function formatTanggalIndonesia(isoDate) {
+      if (!isoDate) return '';
+      const [tahun, bulan, hari] = isoDate.split('-').map(Number);
+      return `${hari} ${NAMA_BULAN[bulan - 1]} ${tahun}`;
+    }
+
+    let currentDocxBlob = null;
+    let currentDocxFilename = null;
+    let currentPdfBlob = null;
+    let currentPdfFilename = null;
+    let currentPdfUrl = null;
+
+    $(document).ready(function() {
+      // Default tanggal form = hari ini
+      const today = new Date();
+      const isoToday = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+      $('#tanggalCetak').val(isoToday);
+
+      $(document).on('click', '.btn-cetak-dokumen', async function() {
+        const btn = $(this);
+        const data = btn.data();
+        const original = btn.html();
+        btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i>');
+        try {
+          const isian = {
+            nama_peserta: data.namaPeserta,
+            pendidikan: data.pendidikan || '-',
+            penempatan: data.penempatan || '-',
+            nama_penguji: data.namaPenguji,
+            nip_penguji: data.nipPenguji,
+            tanggal: formatTanggalIndonesia($('#tanggalCetak').val()),
+          };
+          await tampilkanPreviewDokumen(data.pdfBlank, isian, data.filename);
+        } catch (err) {
+          alert('Gagal membuat dokumen: ' + err.message);
+          console.error(err);
+        } finally {
+          btn.prop('disabled', false).html(original);
+        }
+      });
+
+      $('#btnUnduhWordPreview').on('click', function() {
+        unduhBlob(currentDocxBlob, currentDocxFilename);
+      });
+
+      $('#btnUnduhPdfPreview').on('click', function() {
+        unduhBlob(currentPdfBlob, currentPdfFilename);
+      });
+
+      $('#btnBukaTabBaru').on('click', function() {
+        if (currentPdfUrl) window.open(currentPdfUrl, '_blank');
+      });
+
+      $('#modalPreviewCetak').on('hidden.bs.modal', function() {
+        if (currentPdfUrl) { URL.revokeObjectURL(currentPdfUrl); currentPdfUrl = null; }
+        document.getElementById('previewCetakArea').innerHTML =
+          '<div id="previewCetakLoading" class="text-muted py-5"><i class="fa-solid fa-spinner fa-spin fa-2x"></i><p class="mt-2 mb-0">Menyiapkan pratinjau...</p></div>';
+      });
+    });
+
+    function isiDocxTemplate(zipBuf, data) {
+      const zip = new PizZip(zipBuf);
+      const doc = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
+      doc.render(data);
+      return doc.getZip().generate({
+        type: 'blob',
+        mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      });
+    }
+
+    async function isiPdfTemplate(pdfBuf, config, data) {
+      const { PDFDocument, rgb, StandardFonts } = PDFLib;
+      const pdfDoc = await PDFDocument.load(pdfBuf);
+      const page = pdfDoc.getPages()[0];
+      const font = await pdfDoc.embedFont(StandardFonts.TimesRoman);
+      const pageHeight = page.getHeight();
+      const pageWidth = page.getWidth();
+
+      const drawFit = (text, x, yTop, maxWidth, size = 11) => {
+        let s = size;
+        while (s > 7 && font.widthOfTextAtSize(text, s) > maxWidth) s -= 0.5;
+        page.drawText(text, { x, y: pageHeight - yTop, size: s, font, color: rgb(0, 0, 0) });
+      };
+
+      const rightMargin = pageWidth - 65;
+      const identSize = config.ident.size || 12;
+      drawFit(data.nama_peserta, config.ident.x, config.ident.namaYTop, rightMargin - config.ident.x, identSize);
+      drawFit(data.pendidikan, config.ident.x, config.ident.pendYTop, rightMargin - config.ident.x, identSize);
+      drawFit(data.penempatan, config.ident.x, config.ident.tempatYTop, rightMargin - config.ident.x, identSize);
+
+      const wo = config.sign.whiteout;
+      page.drawRectangle({
+        x: wo.x0,
+        y: pageHeight - wo.yTop1,
+        width: wo.x1 - wo.x0,
+        height: wo.yTop1 - wo.yTop0,
+        color: rgb(1, 1, 1),
+      });
+      const signSize = config.sign.size || 12;
+      drawFit(data.nama_penguji, config.sign.x, config.sign.namaYTop, wo.x1 - config.sign.x, signSize);
+      drawFit('NIP. ' + data.nip_penguji, config.sign.x, config.sign.nipYTop, wo.x1 - config.sign.x, signSize);
+
+      if (data.tanggal) {
+        drawFit(data.tanggal, config.sign.tanggalX, config.sign.tanggalYTop, rightMargin - config.sign.tanggalX, config.sign.tanggalSize || 12.96);
+      }
+
+      return new Blob([await pdfDoc.save()], { type: 'application/pdf' });
+    }
+
+    async function tampilkanPreviewDokumen(pdfBlankUrl, data, filename) {
+      const config = FORM_CONFIG[pdfBlankUrl];
+      if (!config) throw new Error('Konfigurasi form tidak ditemukan: ' + pdfBlankUrl);
+
+      const [pdfResp, docxResp] = await Promise.all([fetch(pdfBlankUrl), fetch(config.docxTemplate)]);
+      if (!pdfResp.ok) throw new Error('Template PDF tidak ditemukan: ' + pdfBlankUrl);
+      if (!docxResp.ok) throw new Error('Template Word tidak ditemukan: ' + config.docxTemplate);
+
+      const [pdfBuf, docxBuf] = await Promise.all([pdfResp.arrayBuffer(), docxResp.arrayBuffer()]);
+
+      currentDocxBlob = isiDocxTemplate(docxBuf, data);
+      currentDocxFilename = filename;
+
+      currentPdfBlob = await isiPdfTemplate(pdfBuf, config, data);
+      currentPdfFilename = filename.replace(/\.docx$/, '.pdf');
+      if (currentPdfUrl) URL.revokeObjectURL(currentPdfUrl);
+      currentPdfUrl = URL.createObjectURL(currentPdfBlob);
+
+      $('#previewCetakLabel').text('Pratinjau: ' + currentPdfFilename);
+      $('#modalPreviewCetak').modal('show');
+
+      await renderPdfKeCanvas(currentPdfBlob, document.getElementById('previewCetakArea'));
+    }
+
+    function unduhBlob(blob, filename) {
+      if (!blob) return;
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    async function renderPdfKeCanvas(pdfBlob, container) {
+      const buf = await pdfBlob.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+      container.innerHTML = '';
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const viewport = page.getViewport({ scale: 2.2 });
+        const canvas = document.createElement('canvas');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        container.appendChild(canvas);
+        await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+      }
+    }
+
+    async function loadCetak() {
+      const { data, error } = await db
+        .from('peserta')
+        .select('id, kode_peserta, nama, pendidikan_terakhir, formasi_jabatan, fakultas(nama), penugasan(id, urutan, jenis_sesi, penguji(nip, nama))')
+        .order('kode_peserta');
+      if (error) { showDbError('memuat data cetak', error); return; }
+      renderCetak(data);
+    }
+
+    function renderCetak(rows) {
+      const tbody = document.getElementById('tbodyCetak');
+      if (!rows.length) {
+        tbody.innerHTML = '<tr><td colspan="11" class="text-center text-muted py-4">Belum ada data peserta.</td></tr>';
+        return;
+      }
+
+      const cetakBtn = (label, pdfBlank, pu, r, btnClass) => {
+        if (!pu || !pu.penguji) {
+          return `<button class="btn btn-sm ${btnClass} fw-semibold" disabled title="${label} - belum diplot"><i class="fa-solid fa-print"></i></button>`;
+        }
+        const filename = `${label.replace(/\s+/g, '-')}_${r.kode_peserta}_${pu.penguji.nama}.docx`;
+        return `<button type="button" class="btn btn-sm ${btnClass} fw-semibold btn-cetak-dokumen" title="Cetak ${label}"
+                  data-pdf-blank="${pdfBlank}"
+                  data-nama-peserta="${escapeHtml(r.nama)}"
+                  data-pendidikan="${escapeHtml(r.pendidikan_terakhir || '')}"
+                  data-penempatan="${escapeHtml(r.formasi_jabatan || '')}"
+                  data-nama-penguji="${escapeHtml(pu.penguji.nama)}"
+                  data-nip-penguji="${escapeHtml(pu.penguji.nip)}"
+                  data-filename="${escapeHtml(filename)}">
+                  <i class="fa-solid fa-print"></i>
+                </button>`;
+      };
+
+      tbody.innerHTML = rows.map((r, i) => {
+        const cari = (jenis, urutan) => r.penugasan.find(p => p.jenis_sesi === jenis && p.urutan === urutan);
+        const w1 = cari('Wawancara', 1);
+        const w2 = cari('Wawancara', 2);
+        const pm1 = cari('Praktik Mengajar', 1);
+        const pm2 = cari('Praktik Mengajar', 2);
+        const namaAtau = (pu) => pu && pu.penguji
+          ? `${escapeHtml(pu.penguji.nama)}<br><small class="text-muted">NIP. ${escapeHtml(pu.penguji.nip)}</small>`
+          : '<span class="text-muted fst-italic">Belum diplot</span>';
+
+        return `
+          <tr>
+            <td class="text-center fw-semibold">${i + 1}</td>
+            <td class="text-center"><span class="badge bg-secondary bg-opacity-10 text-secondary">${escapeHtml(r.kode_peserta)}</span></td>
+            <td class="fw-bold text-dark">${escapeHtml(r.nama)}</td>
+            <td>${escapeHtml(r.pendidikan_terakhir || '-')}</td>
+            <td>${escapeHtml(r.formasi_jabatan || '-')}</td>
+            <td>${escapeHtml(r.fakultas ? r.fakultas.nama : '-')}</td>
+            <td>${namaAtau(w1)}</td>
+            <td>${namaAtau(w2)}</td>
+            <td>${namaAtau(pm1)}</td>
+            <td>${namaAtau(pm2)}</td>
+            <td class="text-center">
+              <div class="d-flex justify-content-center gap-1">
+                ${cetakBtn('Wawancara I', 'assets/forms/form-wawancara-1-blank.pdf', w1, r, 'btn-primary')}
+                ${cetakBtn('Wawancara II', 'assets/forms/form-wawancara-2-blank.pdf', w2, r, 'btn-info text-white')}
+                ${cetakBtn('Mengajar I', 'assets/forms/form-microteaching-1-blank.pdf', pm1, r, 'btn-warning text-dark')}
+                ${cetakBtn('Mengajar II', 'assets/forms/form-microteaching-2-blank.pdf', pm2, r, 'btn-success')}
+              </div>
+            </td>
+          </tr>`;
+      }).join('');
+    }
+  </script>
 </body>
 </html>

@@ -81,7 +81,7 @@
 
         <!-- Header Navigation Bar -->
         <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2 pb-3 border-bottom">
-          <a href="home.html" class="btn btn-outline-primary btn-dt fw-semibold">
+          <a href="index.html" class="btn btn-outline-primary btn-dt fw-semibold">
             <i class="fa-solid fa-house me-1"></i> Kembali ke Beranda
           </a>
           <span class="badge bg-light text-secondary border px-3 py-2 rounded-pill">
@@ -162,7 +162,7 @@
                   </h5>
                   <p class="text-muted small mb-4">Atur batas kelulusan minimum dan bobot nilai untuk seleksi.</p>
 
-                  <form>
+                  <form id="formParameter">
                     <div class="row g-3 mb-3">
                       <div class="col-md-6">
                         <label for="passWawancara" class="form-label fw-bold text-dark small">Ambang Batas Wawancara</label>
@@ -181,7 +181,7 @@
                       <input type="text" id="tahunSeleksi" class="form-control" value="2026">
                     </div>
 
-                    <button type="button" class="btn btn-primary px-4 fw-semibold" onclick="alert('Pengaturan parameter tersimpan!')">
+                    <button type="button" class="btn btn-primary px-4 fw-semibold" onclick="simpanParameter()">
                       <i class="fa-solid fa-floppy-disk me-1"></i> Simpan Parameter
                     </button>
                   </form>
@@ -242,6 +242,9 @@
 
   <!-- Bootstrap 5 JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/supabase-client.js"></script>
 
   <script>
     // Memuat konfigurasi tersimpan saat halaman dibuka
@@ -251,6 +254,8 @@
 
       if (savedUrl) document.getElementById("supabaseUrl").value = savedUrl;
       if (savedKey) document.getElementById("supabaseKey").value = savedKey;
+
+      muatParameter();
     });
 
     function simpanConfigSupabase() {
@@ -265,7 +270,55 @@
       localStorage.setItem("SUPABASE_URL", url);
       localStorage.setItem("SUPABASE_KEY", key);
 
-      alert("Konfigurasi Supabase berhasil disimpan di browser!");
+      alert("Konfigurasi Supabase berhasil disimpan di browser! Memuat ulang halaman agar koneksi aktif...");
+      location.reload();
+    }
+
+    // ==================== PARAMETER SELEKSI (tabel periode_seleksi) ====================
+    let periodeAktifId = null;
+
+    async function muatParameter() {
+      if (!window.db) return; // Supabase belum dikonfigurasi
+
+      const { data, error } = await db
+        .from("periode_seleksi")
+        .select("*")
+        .eq("status_aktif", true)
+        .order("id", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error) { showDbError("memuat parameter seleksi", error); return; }
+
+      if (data) {
+        periodeAktifId = data.id;
+        document.getElementById("passWawancara").value = data.ambang_batas_wawancara;
+        document.getElementById("passMengajar").value = data.ambang_batas_praktik;
+        document.getElementById("tahunSeleksi").value = data.tahun;
+      }
+    }
+
+    async function simpanParameter() {
+      if (!window.db) { alert("Konfigurasi Supabase terlebih dahulu di tab Integrasi Supabase."); return; }
+
+      const payload = {
+        tahun: document.getElementById("tahunSeleksi").value.trim(),
+        ambang_batas_wawancara: parseFloat(document.getElementById("passWawancara").value),
+        ambang_batas_praktik: parseFloat(document.getElementById("passMengajar").value),
+        status_aktif: true,
+      };
+
+      let error;
+      if (periodeAktifId) {
+        ({ error } = await db.from("periode_seleksi").update(payload).eq("id", periodeAktifId));
+      } else {
+        const res = await db.from("periode_seleksi").insert(payload).select("id").single();
+        error = res.error;
+        if (!error) periodeAktifId = res.data.id;
+      }
+
+      if (error) { showDbError("menyimpan parameter seleksi", error); return; }
+      alert("Pengaturan parameter tersimpan!");
     }
 
     function tesKoneksiSupabase() {

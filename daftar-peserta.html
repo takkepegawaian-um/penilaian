@@ -74,12 +74,18 @@
         <!-- TOOLBAR & FILTER -->
         <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2 no-print">
           <div class="d-flex flex-wrap gap-2">
-            <a href="home.html" class="btn-toolbar-custom">
+            <a href="index.html" class="btn-toolbar-custom">
               <i class="fa-solid fa-house"></i> Beranda
             </a>
             <button class="btn btn-sm btn-primary rounded-2 px-3 fw-semibold" data-bs-toggle="modal" data-bs-target="#modalTambahPeserta">
               <i class="fa-solid fa-user-plus me-1"></i> Tambah Peserta
             </button>
+            <button class="btn btn-sm btn-outline-success rounded-2 px-3 fw-semibold" data-bs-toggle="modal" data-bs-target="#modalImportPeserta">
+              <i class="fa-solid fa-file-import me-1"></i> Import Excel
+            </button>
+            <a href="template-data-peserta.xlsx" download class="btn-toolbar-custom text-success">
+              <i class="fa-solid fa-download"></i> Download Template
+            </a>
             <button class="btn-toolbar-custom" onclick="alert('Data berhasil disalin!')">
               <i class="fa-regular fa-copy"></i> Copy
             </button>
@@ -108,9 +114,6 @@
           <div class="col-md-4 col-lg-3">
             <select class="form-select form-select-sm" id="filterFormasi">
               <option value="">-- Semua Formasi / Fakultas --</option>
-              <option value="Fakultas Teknik">Fakultas Teknik</option>
-              <option value="FMIPA">FMIPA</option>
-              <option value="FIP">FIP</option>
             </select>
           </div>
         </div>
@@ -124,65 +127,17 @@
                 <th style="width: 12%;">Kode Peserta</th>
                 <th style="width: 18%;">Nama Peserta</th>
                 <th style="width: 16%;">Email</th>
-                <th style="width: 7%;" class="text-center">Usia (Thn)</th>
-                <th style="width: 10%;" class="text-center">Jenis Kelamin</th>
-                <th style="width: 8%;" class="text-center">Agama</th>
-                <th style="width: 13%;">Formasi</th>
-                <th style="width: 13%;">Fakultas</th>
-                <th style="width: 8%;" class="text-center no-print">Aksi</th>
+                <th style="width: 6%;" class="text-center">Usia (Thn)</th>
+                <th style="width: 9%;" class="text-center">Jenis Kelamin</th>
+                <th style="width: 7%;" class="text-center">Agama</th>
+                <th style="width: 12%;">Formasi</th>
+                <th style="width: 11%;">Fakultas</th>
+                <th style="width: 12%;">Pendidikan Terakhir</th>
+                <th style="width: 7%;" class="text-center no-print">Aksi</th>
               </tr>
             </thead>
-            <tbody>
-              <!-- BARIS 1 -->
-              <tr>
-                <td class="text-center">1</td>
-                <td class="fw-bold text-primary td-kode">2026-FT-001</td>
-                <td class="fw-semibold text-dark td-nama">Budi Santoso, M.Kom.</td>
-                <td class="text-muted td-email">budi.santoso@gmail.com</td>
-                <td class="text-center td-usia">29</td>
-                <td class="text-center td-jk">Laki-Laki</td>
-                <td class="text-center td-agama">Islam</td>
-                <td class="fw-medium td-formasi">Dosen Teknik Informatika</td>
-                <td class="td-fakultas"><span class="badge bg-secondary-subtle text-dark border px-2 py-1">Fakultas Teknik</span></td>
-                <td class="text-center no-print">
-                  <button class="btn btn-sm btn-outline-primary border-0 btn-edit-peserta" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
-                  <button class="btn btn-sm btn-outline-danger border-0" title="Hapus" onclick="if(confirm('Hapus peserta ini?')) $(this).closest('tr').remove()"><i class="fa-solid fa-trash"></i></button>
-                </td>
-              </tr>
-
-              <!-- BARIS 2 -->
-              <tr>
-                <td class="text-center">2</td>
-                <td class="fw-bold text-primary td-kode">2026-FM-014</td>
-                <td class="fw-semibold text-dark td-nama">Siti Nurhaliza, M.Sc.</td>
-                <td class="text-muted td-email">siti.nurhaliza@yahoo.com</td>
-                <td class="text-center td-usia">27</td>
-                <td class="text-center td-jk">Perempuan</td>
-                <td class="text-center td-agama">Islam</td>
-                <td class="fw-medium td-formasi">Dosen Matematika</td>
-                <td class="td-fakultas"><span class="badge bg-secondary-subtle text-dark border px-2 py-1">FMIPA</span></td>
-                <td class="text-center no-print">
-                  <button class="btn btn-sm btn-outline-primary border-0 btn-edit-peserta" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
-                  <button class="btn btn-sm btn-outline-danger border-0" title="Hapus" onclick="if(confirm('Hapus peserta ini?')) $(this).closest('tr').remove()"><i class="fa-solid fa-trash"></i></button>
-                </td>
-              </tr>
-
-              <!-- BARIS 3 -->
-              <tr>
-                <td class="text-center">3</td>
-                <td class="fw-bold text-primary td-kode">2026-FI-008</td>
-                <td class="fw-semibold text-dark td-nama">Rian Hidayat, M.Pd.</td>
-                <td class="text-muted td-email">rian.hidayat@gmail.com</td>
-                <td class="text-center td-usia">31</td>
-                <td class="text-center td-jk">Laki-Laki</td>
-                <td class="text-center td-agama">Kristen</td>
-                <td class="fw-medium td-formasi">Dosen PGSD</td>
-                <td class="td-fakultas"><span class="badge bg-secondary-subtle text-dark border px-2 py-1">FIP</span></td>
-                <td class="text-center no-print">
-                  <button class="btn btn-sm btn-outline-primary border-0 btn-edit-peserta" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
-                  <button class="btn btn-sm btn-outline-danger border-0" title="Hapus" onclick="if(confirm('Hapus peserta ini?')) $(this).closest('tr').remove()"><i class="fa-solid fa-trash"></i></button>
-                </td>
-              </tr>
+            <tbody id="tbodyPeserta">
+              <tr><td colspan="11" class="text-center text-muted py-4">Memuat data peserta...</td></tr>
             </tbody>
           </table>
         </div>
@@ -204,23 +159,23 @@
             <div class="row g-3">
               <div class="col-md-6">
                 <label class="form-label fw-semibold">Kode Peserta</label>
-                <input type="text" class="form-control form-control-sm" placeholder="Contoh: 2026-FT-001" required>
+                <input type="text" id="tambahKode" class="form-control form-control-sm" placeholder="Contoh: 2026-FT-001" required>
               </div>
               <div class="col-md-6">
                 <label class="form-label fw-semibold">Nama Peserta (Beserta Gelar)</label>
-                <input type="text" class="form-control form-control-sm" placeholder="Masukkan nama lengkap" required>
+                <input type="text" id="tambahNama" class="form-control form-control-sm" placeholder="Masukkan nama lengkap" required>
               </div>
               <div class="col-md-6">
                 <label class="form-label fw-semibold">Email Peserta</label>
-                <input type="email" class="form-control form-control-sm" placeholder="nama@email.com" required>
+                <input type="email" id="tambahEmail" class="form-control form-control-sm" placeholder="nama@email.com" required>
               </div>
               <div class="col-md-3">
                 <label class="form-label fw-semibold">Usia (Tahun)</label>
-                <input type="number" class="form-control form-control-sm" placeholder="28" min="20" max="60" required>
+                <input type="number" id="tambahUsia" class="form-control form-control-sm" placeholder="28" min="20" max="60" required>
               </div>
               <div class="col-md-3">
                 <label class="form-label fw-semibold">Jenis Kelamin</label>
-                <select class="form-select form-select-sm" required>
+                <select id="tambahJk" class="form-select form-select-sm" required>
                   <option value="" selected disabled>-- Pilih --</option>
                   <option value="Laki-Laki">Laki-Laki</option>
                   <option value="Perempuan">Perempuan</option>
@@ -228,7 +183,7 @@
               </div>
               <div class="col-md-4">
                 <label class="form-label fw-semibold">Agama</label>
-                <select class="form-select form-select-sm" required>
+                <select id="tambahAgama" class="form-select form-select-sm" required>
                   <option value="" selected disabled>-- Pilih Agama --</option>
                   <option value="Islam">Islam</option>
                   <option value="Kristen">Kristen</option>
@@ -240,21 +195,17 @@
               </div>
               <div class="col-md-4">
                 <label class="form-label fw-semibold">Formasi Jabatan</label>
-                <input type="text" class="form-control form-control-sm" placeholder="Contoh: Dosen Teknik Informatika" required>
+                <input type="text" id="tambahFormasi" class="form-control form-control-sm" placeholder="Contoh: Dosen Teknik Informatika" required>
               </div>
               <div class="col-md-4">
                 <label class="form-label fw-semibold">Fakultas</label>
-                <select class="form-select form-select-sm" required>
+                <select id="tambahFakultas" class="form-select form-select-sm select-fakultas" required>
                   <option value="" selected disabled>-- Pilih Fakultas --</option>
-                  <option value="Fakultas Teknik">Fakultas Teknik</option>
-                  <option value="FMIPA">FMIPA</option>
-                  <option value="FIP">FIP</option>
-                  <option value="FEB">FEB</option>
-                  <option value="FS">Fakultas Sastra</option>
-                  <option value="FIK">FIK</option>
-                  <option value="FIS">FIS</option>
-                  <option value="FPsi">Fakultas Psikologi</option>
                 </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Pendidikan Terakhir</label>
+                <input type="text" id="tambahPendidikan" class="form-control form-control-sm" placeholder="Contoh: S2 Teknik Informatika">
               </div>
             </div>
           </div>
@@ -318,16 +269,12 @@
               </div>
               <div class="col-md-4">
                 <label class="form-label fw-semibold">Fakultas</label>
-                <select id="editFakultas" class="form-select form-select-sm" required>
-                  <option value="Fakultas Teknik">Fakultas Teknik</option>
-                  <option value="FMIPA">FMIPA</option>
-                  <option value="FIP">FIP</option>
-                  <option value="FEB">FEB</option>
-                  <option value="Fakultas Sastra">Fakultas Sastra</option>
-                  <option value="FIK">FIK</option>
-                  <option value="FIS">FIS</option>
-                  <option value="Fakultas Psikologi">Fakultas Psikologi</option>
+                <select id="editFakultas" class="form-select form-select-sm select-fakultas" required>
                 </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Pendidikan Terakhir</label>
+                <input type="text" id="editPendidikan" class="form-control form-control-sm">
               </div>
             </div>
           </div>
@@ -336,6 +283,48 @@
             <button type="submit" class="btn btn-sm btn-warning fw-semibold px-3"><i class="fa-solid fa-floppy-disk me-1"></i>Perbarui Data</button>
           </div>
         </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL IMPORT EXCEL ==================== -->
+  <div class="modal fade" id="modalImportPeserta" tabindex="-1" aria-labelledby="modalImportLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+      <div class="modal-content">
+        <div class="modal-header bg-success text-white">
+          <h6 class="modal-title fw-bold" id="modalImportLabel"><i class="fa-solid fa-file-import me-2"></i>Import Data Peserta dari Excel</h6>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body small">
+          <p class="text-secondary mb-2">
+            Gunakan <a href="template-data-peserta.xlsx" download>template Excel</a> yang sudah disediakan (sheet "Data Peserta"). Kolom Fakultas boleh diisi nama lengkap atau kode singkat (mis. "FT", "FMIPA"). Pilih file, periksa hasil pratinjau, lalu klik Import.
+          </p>
+          <input type="file" id="fileImportPeserta" class="form-control form-control-sm mb-3" accept=".xlsx,.xls">
+          <div id="importSummary" class="mb-2 fw-semibold"></div>
+          <div class="table-responsive border rounded-3" style="max-height: 350px; overflow-y: auto;">
+            <table class="table table-sm table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Baris</th>
+                  <th>Kode</th>
+                  <th>Nama</th>
+                  <th>Email</th>
+                  <th>Fakultas</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyImportPreview">
+                <tr><td colspan="6" class="text-center text-muted py-3">Pilih file Excel untuk melihat pratinjau.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer bg-light">
+          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="button" id="btnKonfirmasiImport" class="btn btn-sm btn-success px-3 fw-semibold" disabled onclick="konfirmasiImportPeserta()">
+            <i class="fa-solid fa-upload me-1"></i> Import Data Valid
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -350,10 +339,24 @@
   <!-- Scripts -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/supabase-client.js"></script>
+  <!-- SheetJS (baca file Excel) -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
   <script>
-    $(document).ready(function() {
-      // Live Search
+    let currentEditId = null;
+    let fakultasList = [];
+    let importRows = []; // hasil parsing terakhir, siap divalidasi/diimpor
+
+    $(document).ready(async function() {
+      if (!window.db) return;
+
+      await loadFakultas();
+      await loadPeserta();
+
+      // Live Search (menyaring baris yang sudah dimuat)
       $('#inputSearch').on('keyup', function() {
         const value = $(this).val().toLowerCase();
         $('#tablePeserta tbody tr').filter(function() {
@@ -361,56 +364,301 @@
         });
       });
 
-      // Filter Formasi / Fakultas
+      // Filter Fakultas -> query ulang ke Supabase
       $('#filterFormasi').on('change', function() {
-        const value = $(this).val().toLowerCase();
-        $('#tablePeserta tbody tr').filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
-        });
+        loadPeserta();
+      });
+
+      // Submit Form Tambah
+      $('#formTambahPeserta').on('submit', async function(e) {
+        e.preventDefault();
+        try {
+          const periodeId = await getPeriodeAktifId();
+          const { error } = await db.from('peserta').insert({
+            periode_id: periodeId,
+            kode_peserta: $('#tambahKode').val().trim(),
+            nama: $('#tambahNama').val().trim(),
+            email: $('#tambahEmail').val().trim(),
+            usia: parseInt($('#tambahUsia').val(), 10),
+            jenis_kelamin: $('#tambahJk').val(),
+            agama: $('#tambahAgama').val(),
+            formasi_jabatan: $('#tambahFormasi').val().trim(),
+            fakultas_id: parseInt($('#tambahFakultas').val(), 10),
+            pendidikan_terakhir: $('#tambahPendidikan').val().trim() || null,
+          });
+          if (error) throw error;
+          alert('Data peserta berhasil ditambahkan!');
+          bootstrap.Modal.getInstance(document.getElementById('modalTambahPeserta')).hide();
+          this.reset();
+          loadPeserta();
+        } catch (err) {
+          showDbError('menambahkan peserta', err);
+        }
       });
 
       // Buka Modal Edit & Isi Data
-      let targetRow = null;
       $(document).on('click', '.btn-edit-peserta', function() {
-        targetRow = $(this).closest('tr');
-        
-        $('#editKode').val(targetRow.find('.td-kode').text().trim());
-        $('#editNama').val(targetRow.find('.td-nama').text().trim());
-        $('#editEmail').val(targetRow.find('.td-email').text().trim());
-        $('#editUsia').val(targetRow.find('.td-usia').text().trim());
-        $('#editJk').val(targetRow.find('.td-jk').text().trim());
-        $('#editAgama').val(targetRow.find('.td-agama').text().trim());
-        $('#editFormasi').val(targetRow.find('.td-formasi').text().trim());
-        $('#editFakultas').val(targetRow.find('.td-fakultas').text().trim());
+        const row = $(this).closest('tr');
+        currentEditId = row.data('id');
+
+        $('#editKode').val(row.find('.td-kode').text().trim());
+        $('#editNama').val(row.find('.td-nama').text().trim());
+        $('#editEmail').val(row.find('.td-email').text().trim());
+        $('#editUsia').val(row.find('.td-usia').text().trim());
+        $('#editJk').val(row.find('.td-jk').text().trim());
+        $('#editAgama').val(row.find('.td-agama').text().trim());
+        $('#editFormasi').val(row.find('.td-formasi').text().trim());
+        $('#editFakultas').val(row.find('.td-fakultas').data('fakultas-id'));
+        $('#editPendidikan').val(row.find('.td-pendidikan').text().trim());
 
         $('#modalEditPeserta').modal('show');
       });
 
-      // Submit Form Tambah
-      $('#formTambahPeserta').on('submit', function(e) {
+      // Submit Form Edit
+      $('#formEditPeserta').on('submit', async function(e) {
         e.preventDefault();
-        alert('Data peserta berhasil ditambahkan!');
-        $('#modalTambahPeserta').modal('hide');
-        this.reset();
+        try {
+          const { error } = await db.from('peserta').update({
+            kode_peserta: $('#editKode').val().trim(),
+            nama: $('#editNama').val().trim(),
+            email: $('#editEmail').val().trim(),
+            usia: parseInt($('#editUsia').val(), 10),
+            jenis_kelamin: $('#editJk').val(),
+            agama: $('#editAgama').val(),
+            formasi_jabatan: $('#editFormasi').val().trim(),
+            fakultas_id: parseInt($('#editFakultas').val(), 10),
+            pendidikan_terakhir: $('#editPendidikan').val().trim() || null,
+          }).eq('id', currentEditId);
+          if (error) throw error;
+          alert('Data peserta berhasil diperbarui!');
+          $('#modalEditPeserta').modal('hide');
+          loadPeserta();
+        } catch (err) {
+          showDbError('memperbarui peserta', err);
+        }
       });
 
-      // Submit Form Edit
-      $('#formEditPeserta').on('submit', function(e) {
-        e.preventDefault();
-        if (targetRow) {
-          targetRow.find('.td-kode').text($('#editKode').val());
-          targetRow.find('.td-nama').text($('#editNama').val());
-          targetRow.find('.td-email').text($('#editEmail').val());
-          targetRow.find('.td-usia').text($('#editUsia').val());
-          targetRow.find('.td-jk').text($('#editJk').val());
-          targetRow.find('.td-agama').text($('#editAgama').val());
-          targetRow.find('.td-formasi').text($('#editFormasi').val());
-          targetRow.find('.td-fakultas .badge').text($('#editFakultas').val());
-        }
-        alert('Data peserta berhasil diperbarui!');
-        $('#modalEditPeserta').modal('hide');
+      // Hapus Peserta
+      $(document).on('click', '.btn-hapus-peserta', async function() {
+        const row = $(this).closest('tr');
+        const id = row.data('id');
+        if (!confirm('Hapus peserta ini?')) return;
+        const { error } = await db.from('peserta').delete().eq('id', id);
+        if (error) { showDbError('menghapus peserta', error); return; }
+        loadPeserta();
+      });
+
+      // Import Excel: pilih file -> parse & pratinjau
+      $('#fileImportPeserta').on('change', async function(e) {
+        const file = e.target.files[0];
+        if (file) await prosesFileImport(file);
+      });
+
+      // Reset modal import saat ditutup
+      $('#modalImportPeserta').on('hidden.bs.modal', function() {
+        importRows = [];
+        $('#fileImportPeserta').val('');
+        $('#importSummary').html('');
+        $('#tbodyImportPreview').html('<tr><td colspan="6" class="text-center text-muted py-3">Pilih file Excel untuk melihat pratinjau.</td></tr>');
+        $('#btnKonfirmasiImport').prop('disabled', true);
       });
     });
+
+    async function loadFakultas() {
+      const { data, error } = await db.from('fakultas').select('*').order('nama');
+      if (error) { showDbError('memuat data fakultas', error); return; }
+      fakultasList = data;
+
+      const optsFilter = '<option value="">-- Semua Formasi / Fakultas --</option>' +
+        data.map(f => `<option value="${f.id}">${escapeHtml(f.nama)}</option>`).join('');
+      $('#filterFormasi').html(optsFilter);
+
+      const optsForm = '<option value="" selected disabled>-- Pilih Fakultas --</option>' +
+        data.map(f => `<option value="${f.id}">${escapeHtml(f.nama)}</option>`).join('');
+      $('.select-fakultas').html(optsForm);
+    }
+
+    async function loadPeserta() {
+      let query = db.from('peserta').select('*, fakultas(id, kode, nama)').order('kode_peserta');
+      const fakultasId = $('#filterFormasi').val();
+      if (fakultasId) query = query.eq('fakultas_id', fakultasId);
+
+      const { data, error } = await query;
+      if (error) { showDbError('memuat data peserta', error); return; }
+      renderPeserta(data);
+    }
+
+    function renderPeserta(rows) {
+      const tbody = document.getElementById('tbodyPeserta');
+      if (!rows.length) {
+        tbody.innerHTML = '<tr><td colspan="11" class="text-center text-muted py-4">Belum ada data peserta.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = rows.map((r, i) => `
+        <tr data-id="${r.id}">
+          <td class="text-center">${i + 1}</td>
+          <td class="fw-bold text-primary td-kode">${escapeHtml(r.kode_peserta)}</td>
+          <td class="fw-semibold text-dark td-nama">${escapeHtml(r.nama)}</td>
+          <td class="text-muted td-email">${escapeHtml(r.email)}</td>
+          <td class="text-center td-usia">${r.usia ?? ''}</td>
+          <td class="text-center td-jk">${escapeHtml(r.jenis_kelamin)}</td>
+          <td class="text-center td-agama">${escapeHtml(r.agama)}</td>
+          <td class="fw-medium td-formasi">${escapeHtml(r.formasi_jabatan)}</td>
+          <td class="td-fakultas" data-fakultas-id="${r.fakultas ? r.fakultas.id : ''}" title="${escapeHtml(r.fakultas ? r.fakultas.nama : '')}"><span class="badge bg-secondary-subtle text-dark border px-2 py-1">${escapeHtml(r.fakultas ? r.fakultas.kode : '-')}</span></td>
+          <td class="td-pendidikan">${escapeHtml(r.pendidikan_terakhir || '')}</td>
+          <td class="text-center no-print">
+            <button class="btn btn-sm btn-outline-primary border-0 btn-edit-peserta" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
+            <button class="btn btn-sm btn-outline-danger border-0 btn-hapus-peserta" title="Hapus"><i class="fa-solid fa-trash"></i></button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // ==================== IMPORT EXCEL ====================
+    const FIELD_MAP_IMPORT = {
+      'kode peserta': 'kode_peserta',
+      'nama peserta (beserta gelar)': 'nama',
+      'email': 'email',
+      'usia (tahun)': 'usia',
+      'jenis kelamin': 'jenis_kelamin',
+      'agama': 'agama',
+      'formasi jabatan': 'formasi_jabatan',
+      'fakultas': 'fakultas_nama',
+      'penempatan': 'penempatan',
+      'pendidikan terakhir': 'pendidikan_terakhir',
+    };
+    const AGAMA_VALID = ['Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha', 'Khonghucu'];
+
+    async function prosesFileImport(file) {
+      $('#importSummary').html('<span class="text-muted">Memproses file...</span>');
+      try {
+        const buf = await file.arrayBuffer();
+        const wb = XLSX.read(buf, { type: 'array' });
+        const sheetName = wb.SheetNames.includes('Data Peserta') ? 'Data Peserta' : wb.SheetNames[0];
+        const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { header: 1, defval: '' });
+
+        const headerIdx = rows.findIndex(r => r.some(cell => String(cell).toLowerCase().includes('kode peserta')));
+        if (headerIdx === -1) {
+          $('#importSummary').html('<span class="text-danger">Header "Kode Peserta" tidak ditemukan. Gunakan template yang disediakan.</span>');
+          importRows = [];
+          renderPreviewImport();
+          return;
+        }
+
+        const headerRow = rows[headerIdx];
+        const colToField = headerRow.map(h => FIELD_MAP_IMPORT[String(h).replace(/\*$/, '').trim().toLowerCase()] || null);
+
+        const parsed = [];
+        rows.slice(headerIdx + 1).forEach((r, idx) => {
+          const obj = { _baris: headerIdx + idx + 2 }; // nomor baris asli di file Excel (1-based)
+          colToField.forEach((field, i) => { if (field) obj[field] = String(r[i] ?? '').trim(); });
+
+          const kosong = !obj.kode_peserta && !obj.nama && !obj.email;
+          const contoh = obj.kode_peserta === '2026-FT-001' && obj.email === 'budi.santoso@gmail.com';
+          if (kosong || contoh) return;
+
+          parsed.push(obj);
+        });
+
+        importRows = parsed.map(validasiBarisImport);
+        renderPreviewImport();
+      } catch (err) {
+        $('#importSummary').html('<span class="text-danger">Gagal membaca file: ' + escapeHtml(err.message) + '</span>');
+      }
+    }
+
+    function validasiBarisImport(row) {
+      const errors = [];
+      if (!row.kode_peserta) errors.push('Kode Peserta kosong');
+      if (!row.nama) errors.push('Nama kosong');
+      if (!row.email) errors.push('Email kosong');
+      const usiaNum = parseInt(row.usia, 10);
+      if (!row.usia || isNaN(usiaNum) || usiaNum < 17 || usiaNum > 80) errors.push('Usia tidak valid (17-80)');
+      if (!['Laki-Laki', 'Perempuan'].includes(row.jenis_kelamin)) errors.push('Jenis Kelamin harus Laki-Laki/Perempuan');
+      if (!AGAMA_VALID.includes(row.agama)) errors.push('Agama tidak valid');
+      if (!row.formasi_jabatan) errors.push('Formasi Jabatan kosong');
+      const fakultasInput = String(row.fakultas_nama || '').trim().toLowerCase();
+      const fakultas = fakultasList.find(f => f.nama.toLowerCase() === fakultasInput || f.kode.toLowerCase() === fakultasInput);
+      if (!fakultas) errors.push(`Fakultas tidak dikenali: "${row.fakultas_nama || ''}" (isi nama lengkap atau kode singkat, mis. FT)`);
+
+      return { ...row, usia: usiaNum, fakultas_id: fakultas ? fakultas.id : null, errors };
+    }
+
+    function renderPreviewImport() {
+      const tbody = document.getElementById('tbodyImportPreview');
+      if (!importRows.length) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-3">Tidak ada baris data yang terdeteksi.</td></tr>';
+        $('#importSummary').html('<span class="text-muted">Tidak ada baris data untuk diimpor (isi dulu template mulai baris 6).</span>');
+        $('#btnKonfirmasiImport').prop('disabled', true);
+        return;
+      }
+
+      tbody.innerHTML = importRows.map(r => `
+        <tr>
+          <td>${r._baris}</td>
+          <td>${escapeHtml(r.kode_peserta || '-')}</td>
+          <td>${escapeHtml(r.nama || '-')}</td>
+          <td>${escapeHtml(r.email || '-')}</td>
+          <td>${escapeHtml(r.fakultas_nama || '-')}</td>
+          <td>${r.errors.length
+            ? `<span class="badge bg-danger-subtle text-danger border border-danger-subtle" title="${escapeHtml(r.errors.join('; '))}"><i class="fa-solid fa-circle-xmark me-1"></i>${escapeHtml(r.errors.join(', '))}</span>`
+            : '<span class="badge bg-success-subtle text-success border border-success-subtle"><i class="fa-solid fa-circle-check me-1"></i>Valid</span>'}
+          </td>
+        </tr>
+      `).join('');
+
+      const validCount = importRows.filter(r => !r.errors.length).length;
+      const errorCount = importRows.length - validCount;
+      $('#importSummary').html(
+        `<span class="text-success">${validCount} baris valid</span>` +
+        (errorCount ? ` &middot; <span class="text-danger">${errorCount} baris bermasalah (akan dilewati)</span>` : '')
+      );
+      $('#btnKonfirmasiImport').prop('disabled', validCount === 0);
+    }
+
+    async function konfirmasiImportPeserta() {
+      const validRows = importRows.filter(r => !r.errors.length);
+      if (!validRows.length) return;
+
+      const $btn = $('#btnKonfirmasiImport');
+      $btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin me-1"></i> Mengimpor...');
+
+      let sukses = 0;
+      const gagal = [];
+      try {
+        const periodeId = await getPeriodeAktifId();
+        for (const r of validRows) {
+          const { error } = await db.from('peserta').insert({
+            periode_id: periodeId,
+            kode_peserta: r.kode_peserta,
+            nama: r.nama,
+            email: r.email,
+            usia: r.usia,
+            jenis_kelamin: r.jenis_kelamin,
+            agama: r.agama,
+            formasi_jabatan: r.formasi_jabatan,
+            fakultas_id: r.fakultas_id,
+            penempatan: r.penempatan || null,
+            pendidikan_terakhir: r.pendidikan_terakhir || null,
+          });
+          if (error) gagal.push(`Baris ${r._baris} (${r.kode_peserta}): ${error.message}`);
+          else sukses++;
+        }
+      } catch (err) {
+        showDbError('mengimpor data peserta', err);
+      }
+
+      $btn.html('<i class="fa-solid fa-upload me-1"></i> Import Data Valid');
+
+      alert(`Import selesai: ${sukses} peserta berhasil ditambahkan.` + (gagal.length ? `\n\nGagal (${gagal.length}):\n` + gagal.join('\n') : ''));
+
+      if (sukses > 0) {
+        bootstrap.Modal.getInstance(document.getElementById('modalImportPeserta')).hide();
+        loadPeserta();
+      } else {
+        $btn.prop('disabled', false);
+      }
+    }
   </script>
 </body>
 </html>
