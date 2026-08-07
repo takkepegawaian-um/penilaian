@@ -222,7 +222,7 @@
     });
 
     async function loadFakultasFilter() {
-      const { data, error } = await db.from('fakultas').select('*').order('nama');
+      const { data, error } = await db.from('fakultas').select('*').order('id');
       if (error) { showDbError('memuat data fakultas', error); return; }
       const opts = '<option value="">-- Semua Fakultas --</option>' +
         data.map(f => `<option value="${f.id}">${escapeHtml(f.nama)}</option>`).join('');
