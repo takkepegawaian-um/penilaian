@@ -61,12 +61,13 @@
       border-bottom-color: #fff;
     }
 
-    .btn-urutan {
-      width: 26px;
-      height: 22px;
-      padding: 0;
-      line-height: 1;
-      font-size: 0.7rem;
+    .drag-handle {
+      cursor: grab;
+    }
+
+    .sortable-ghost {
+      opacity: 0.4;
+      background-color: #e7f1ff !important;
     }
   </style>
 </head>
@@ -218,6 +219,8 @@
   <!-- Supabase JS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="assets/supabase-client.js"></script>
+  <!-- SortableJS (drag & drop urutan) -->
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 
   <script>
     let currentEditId = null;
@@ -311,30 +314,36 @@
         row.data('aktif', aktif);
       });
 
-      // Naik / Turun Urutan
-      $(document).on('click', '.btn-naik-unsur, .btn-turun-unsur', async function() {
-        const row = $(this).closest('tr');
-        const arah = $(this).hasClass('btn-naik-unsur') ? 'naik' : 'turun';
-        const target = arah === 'naik' ? row.prev('tr') : row.next('tr');
-        if (!target.length) return;
+      // Drag & drop urutan
+      initSortable('tbodyWawancaraUnsur');
+      initSortable('tbodyPraktikUnsur');
+    });
 
-        const idA = row.data('id'), urutanA = row.data('urutan');
-        const idB = target.data('id'), urutanB = target.data('urutan');
-
-        try {
-          // Tukar urutan lewat nilai sementara agar tidak melanggar unique(jenis_sesi, urutan)
-          let { error } = await db.from('unsur_penilaian').update({ urutan: -1 }).eq('id', idA);
-          if (error) throw error;
-          ({ error } = await db.from('unsur_penilaian').update({ urutan: urutanA }).eq('id', idB));
-          if (error) throw error;
-          ({ error } = await db.from('unsur_penilaian').update({ urutan: urutanB }).eq('id', idA));
-          if (error) throw error;
-          loadUnsur();
-        } catch (err) {
-          showDbError('mengubah urutan unsur penilaian', err);
+    function initSortable(tbodyId) {
+      Sortable.create(document.getElementById(tbodyId), {
+        handle: '.drag-handle',
+        animation: 150,
+        ghostClass: 'sortable-ghost',
+        onEnd: async (evt) => {
+          const ids = Array.from(evt.to.querySelectorAll('tr[data-id]')).map(tr => parseInt(tr.dataset.id, 10));
+          try {
+            // Kosongkan dulu ke nilai negatif sementara agar tidak melanggar unique(jenis_sesi, urutan)
+            for (let i = 0; i < ids.length; i++) {
+              const { error } = await db.from('unsur_penilaian').update({ urutan: -(i + 1) }).eq('id', ids[i]);
+              if (error) throw error;
+            }
+            for (let i = 0; i < ids.length; i++) {
+              const { error } = await db.from('unsur_penilaian').update({ urutan: i + 1 }).eq('id', ids[i]);
+              if (error) throw error;
+            }
+            loadUnsur();
+          } catch (err) {
+            showDbError('mengubah urutan unsur penilaian', err);
+            loadUnsur();
+          }
         }
       });
-    });
+    }
 
     async function urutanBerikutnya(jenisSesi) {
       const { data } = await db
@@ -368,11 +377,7 @@
       tbody.innerHTML = rows.map((r, i) => `
         <tr data-id="${r.id}" data-jenis="${escapeHtml(r.jenis_sesi)}" data-nama="${escapeHtml(r.nama_unsur)}" data-skor="${r.skor_maks}" data-aktif="${r.aktif}" data-urutan="${r.urutan}">
           <td class="text-center fw-bold text-muted">
-            ${r.urutan}
-            <div class="btn-group-vertical ms-1 align-middle d-inline-flex">
-              <button class="btn btn-outline-secondary btn-urutan btn-naik-unsur" title="Naik" ${i === 0 ? 'disabled' : ''}><i class="fa-solid fa-caret-up"></i></button>
-              <button class="btn btn-outline-secondary btn-urutan btn-turun-unsur" title="Turun" ${i === rows.length - 1 ? 'disabled' : ''}><i class="fa-solid fa-caret-down"></i></button>
-            </div>
+            <span class="drag-handle" title="Geser untuk mengubah urutan"><i class="fa-solid fa-grip-vertical text-muted me-1"></i></span>${r.urutan}
           </td>
           <td class="fw-semibold text-dark">${escapeHtml(r.nama_unsur)}</td>
           <td class="text-center">${r.skor_maks}</td>
