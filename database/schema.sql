@@ -135,6 +135,7 @@ create table penugasan (
   jenis_sesi   jenis_sesi_enum not null,
   urutan       smallint not null check (urutan in (1, 2)),   -- I atau II
   ruangan_id   int references ruangan(id),
+  waktu        timestamptz,
   created_at   timestamptz not null default now(),
   unique (peserta_id, jenis_sesi, urutan)
 );
