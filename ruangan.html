@@ -355,13 +355,7 @@
     function renderFormasiRuangan(formasiSet) {
       if (!formasiSet || !formasiSet.size) return '<span class="text-muted">-</span>';
       const daftar = Array.from(formasiSet);
-      const tampil = daftar.slice(0, 2);
-      const sisa = daftar.length - tampil.length;
-      let html = tampil.map(f => `<span class="badge bg-light text-dark border me-1 mb-1">${escapeHtml(f)}</span>`).join('');
-      if (sisa > 0) {
-        html += `<span class="badge bg-light text-muted border" title="${escapeHtml(daftar.slice(2).join(', '))}">+${sisa} lainnya</span>`;
-      }
-      return html;
+      return daftar.map(f => `<span class="badge bg-light text-dark border me-1 mb-1">${escapeHtml(f)}</span>`).join('');
     }
 
     function renderRuangan(rows, rekapRuangan) {
