@@ -335,7 +335,7 @@
       renderRuangan(data, rekapRuangan);
     }
 
-    // Menghitung jumlah penguji unik & daftar formasi per ruangan, dari data penugasan
+    // Menghitung jumlah penguji unik per ruangan, dipecah per formasi, dari data penugasan
     async function hitungRekapRuangan() {
       const { data, error } = await db
         .from('penugasan')
@@ -343,19 +343,14 @@
         .not('ruangan_id', 'is', null);
       if (error) { showDbError('memuat data penugasan untuk rekap ruangan', error); return {}; }
 
-      const rekap = {}; // { [ruangan_id]: { Wawancara: Set, 'Praktik Mengajar': Set, formasi: Set } }
+      const rekap = {}; // { [ruangan_id]: { [formasi]: { Wawancara: Set, 'Praktik Mengajar': Set } } }
       data.forEach(p => {
-        if (!rekap[p.ruangan_id]) rekap[p.ruangan_id] = { Wawancara: new Set(), 'Praktik Mengajar': new Set(), formasi: new Set() };
-        rekap[p.ruangan_id][p.jenis_sesi].add(p.penguji_id);
-        if (p.peserta && p.peserta.formasi_jabatan) rekap[p.ruangan_id].formasi.add(p.peserta.formasi_jabatan);
+        const formasi = (p.peserta && p.peserta.formasi_jabatan) || '(Formasi tidak diketahui)';
+        if (!rekap[p.ruangan_id]) rekap[p.ruangan_id] = {};
+        if (!rekap[p.ruangan_id][formasi]) rekap[p.ruangan_id][formasi] = { Wawancara: new Set(), 'Praktik Mengajar': new Set() };
+        rekap[p.ruangan_id][formasi][p.jenis_sesi].add(p.penguji_id);
       });
       return rekap;
-    }
-
-    function renderFormasiRuangan(formasiSet) {
-      if (!formasiSet || !formasiSet.size) return '<span class="text-muted">-</span>';
-      const daftar = Array.from(formasiSet);
-      return daftar.map(f => `<span class="badge bg-light text-dark border me-1 mb-1">${escapeHtml(f)}</span>`).join('');
     }
 
     function renderRuangan(rows, rekapRuangan) {
@@ -364,30 +359,52 @@
         tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-4">Belum ada data ruangan.</td></tr>';
         return;
       }
-      tbody.innerHTML = rows.map((r, i) => {
-        const rekap = rekapRuangan[r.id] || { Wawancara: new Set(), 'Praktik Mengajar': new Set(), formasi: new Set() };
-        const jmlWawancara = rekap.Wawancara.size;
-        const jmlPraktik = rekap['Praktik Mengajar'].size;
-        return `
-        <tr data-id="${r.id}">
-          <td class="text-center">${i + 1}</td>
-          <td class="fw-bold text-primary td-kode">${escapeHtml(r.kode)}</td>
-          <td class="fw-semibold text-dark td-nama">${escapeHtml(r.nama_ruangan)}</td>
-          <td class="td-gedung">${escapeHtml(r.gedung || '-')}</td>
-          <td>${renderFormasiRuangan(rekap.formasi)}</td>
-          <td class="text-center">
-            <span class="badge ${jmlWawancara ? 'bg-primary-subtle text-primary border border-primary-subtle' : 'bg-light text-muted border'}">${jmlWawancara}</span>
-          </td>
-          <td class="text-center">
-            <span class="badge ${jmlPraktik ? 'bg-warning-subtle text-warning-emphasis border border-warning-subtle' : 'bg-light text-muted border'}">${jmlPraktik}</span>
-          </td>
-          <td class="text-center">
+
+      const badgeJml = (jml, warna) => `<span class="badge ${jml ? warna : 'bg-light text-muted border'}">${jml}</span>`;
+
+      let html = '';
+      rows.forEach((r, i) => {
+        const rekapFormasi = rekapRuangan[r.id] || {};
+        const daftarFormasi = Object.keys(rekapFormasi).sort();
+        const rowSpan = daftarFormasi.length || 1;
+
+        const identitasCells = `
+          <td class="text-center" rowspan="${rowSpan}">${i + 1}</td>
+          <td class="fw-bold text-primary td-kode" rowspan="${rowSpan}">${escapeHtml(r.kode)}</td>
+          <td class="fw-semibold text-dark td-nama" rowspan="${rowSpan}">${escapeHtml(r.nama_ruangan)}</td>
+          <td class="td-gedung" rowspan="${rowSpan}">${escapeHtml(r.gedung || '-')}</td>
+        `;
+        const aksiCells = `
+          <td class="text-center" rowspan="${rowSpan}">
             <button class="btn btn-sm btn-outline-primary border-0 btn-edit-ruangan" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
             <button class="btn btn-sm btn-outline-danger border-0 btn-hapus-ruangan" title="Hapus"><i class="fa-solid fa-trash"></i></button>
           </td>
-        </tr>
-      `;
-      }).join('');
+        `;
+
+        if (!daftarFormasi.length) {
+          html += `<tr data-id="${r.id}">${identitasCells}
+            <td class="text-muted">-</td>
+            <td class="text-center">${badgeJml(0)}</td>
+            <td class="text-center">${badgeJml(0)}</td>
+            ${aksiCells}
+          </tr>`;
+          return;
+        }
+
+        daftarFormasi.forEach((formasi, idx) => {
+          const jmlWawancara = rekapFormasi[formasi].Wawancara.size;
+          const jmlPraktik = rekapFormasi[formasi]['Praktik Mengajar'].size;
+          html += `<tr${idx === 0 ? ` data-id="${r.id}"` : ''}>
+            ${idx === 0 ? identitasCells : ''}
+            <td>${escapeHtml(formasi)}</td>
+            <td class="text-center">${badgeJml(jmlWawancara, 'bg-primary-subtle text-primary border border-primary-subtle')}</td>
+            <td class="text-center">${badgeJml(jmlPraktik, 'bg-warning-subtle text-warning-emphasis border border-warning-subtle')}</td>
+            ${idx === 0 ? aksiCells : ''}
+          </tr>`;
+        });
+      });
+
+      tbody.innerHTML = html;
     }
 
     // ==================== IMPORT EXCEL ====================
