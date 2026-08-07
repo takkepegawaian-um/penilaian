@@ -94,17 +94,18 @@
           <table class="table table-hover align-middle small mb-0" id="tableRuangan">
             <thead class="table-light">
               <tr>
-                <th style="width: 6%;" class="text-center">No</th>
-                <th style="width: 12%;">Kode</th>
-                <th style="width: 24%;">Nama Ruangan</th>
-                <th style="width: 20%;">Gedung</th>
-                <th style="width: 15%;" class="text-center">Jml Penguji Wawancara</th>
-                <th style="width: 15%;" class="text-center">Jml Penguji Praktik Mengajar</th>
+                <th style="width: 5%;" class="text-center">No</th>
+                <th style="width: 10%;">Kode</th>
+                <th style="width: 16%;">Nama Ruangan</th>
+                <th style="width: 13%;">Gedung</th>
+                <th style="width: 22%;">Formasi di Ruangan Ini</th>
+                <th style="width: 12%;" class="text-center">Jml Penguji Wawancara</th>
+                <th style="width: 12%;" class="text-center">Jml Penguji Praktik Mengajar</th>
                 <th style="width: 8%;" class="text-center">Aksi</th>
               </tr>
             </thead>
             <tbody id="tbodyRuangan">
-              <tr><td colspan="7" class="text-center text-muted py-4">Memuat data...</td></tr>
+              <tr><td colspan="8" class="text-center text-muted py-4">Memuat data...</td></tr>
             </tbody>
           </table>
         </div>
@@ -330,34 +331,47 @@
       const { data, error } = await db.from('ruangan').select('*').order('nama_ruangan');
       if (error) { showDbError('memuat data ruangan', error); return; }
 
-      const jumlahPenguji = await hitungJumlahPengujiPerRuangan();
-      renderRuangan(data, jumlahPenguji);
+      const rekapRuangan = await hitungRekapRuangan();
+      renderRuangan(data, rekapRuangan);
     }
 
-    // Menghitung jumlah penguji unik per ruangan, dipecah per jenis sesi (Wawancara / Praktik Mengajar)
-    async function hitungJumlahPengujiPerRuangan() {
+    // Menghitung jumlah penguji unik & daftar formasi per ruangan, dari data penugasan
+    async function hitungRekapRuangan() {
       const { data, error } = await db
         .from('penugasan')
-        .select('ruangan_id, jenis_sesi, penguji_id')
+        .select('ruangan_id, jenis_sesi, penguji_id, peserta(formasi_jabatan)')
         .not('ruangan_id', 'is', null);
       if (error) { showDbError('memuat data penugasan untuk rekap ruangan', error); return {}; }
 
-      const rekap = {}; // { [ruangan_id]: { Wawancara: Set, 'Praktik Mengajar': Set } }
+      const rekap = {}; // { [ruangan_id]: { Wawancara: Set, 'Praktik Mengajar': Set, formasi: Set } }
       data.forEach(p => {
-        if (!rekap[p.ruangan_id]) rekap[p.ruangan_id] = { Wawancara: new Set(), 'Praktik Mengajar': new Set() };
+        if (!rekap[p.ruangan_id]) rekap[p.ruangan_id] = { Wawancara: new Set(), 'Praktik Mengajar': new Set(), formasi: new Set() };
         rekap[p.ruangan_id][p.jenis_sesi].add(p.penguji_id);
+        if (p.peserta && p.peserta.formasi_jabatan) rekap[p.ruangan_id].formasi.add(p.peserta.formasi_jabatan);
       });
       return rekap;
     }
 
-    function renderRuangan(rows, jumlahPenguji) {
+    function renderFormasiRuangan(formasiSet) {
+      if (!formasiSet || !formasiSet.size) return '<span class="text-muted">-</span>';
+      const daftar = Array.from(formasiSet);
+      const tampil = daftar.slice(0, 2);
+      const sisa = daftar.length - tampil.length;
+      let html = tampil.map(f => `<span class="badge bg-light text-dark border me-1 mb-1">${escapeHtml(f)}</span>`).join('');
+      if (sisa > 0) {
+        html += `<span class="badge bg-light text-muted border" title="${escapeHtml(daftar.slice(2).join(', '))}">+${sisa} lainnya</span>`;
+      }
+      return html;
+    }
+
+    function renderRuangan(rows, rekapRuangan) {
       const tbody = document.getElementById('tbodyRuangan');
       if (!rows.length) {
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4">Belum ada data ruangan.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-4">Belum ada data ruangan.</td></tr>';
         return;
       }
       tbody.innerHTML = rows.map((r, i) => {
-        const rekap = jumlahPenguji[r.id] || { Wawancara: new Set(), 'Praktik Mengajar': new Set() };
+        const rekap = rekapRuangan[r.id] || { Wawancara: new Set(), 'Praktik Mengajar': new Set(), formasi: new Set() };
         const jmlWawancara = rekap.Wawancara.size;
         const jmlPraktik = rekap['Praktik Mengajar'].size;
         return `
@@ -366,6 +380,7 @@
           <td class="fw-bold text-primary td-kode">${escapeHtml(r.kode)}</td>
           <td class="fw-semibold text-dark td-nama">${escapeHtml(r.nama_ruangan)}</td>
           <td class="td-gedung">${escapeHtml(r.gedung || '-')}</td>
+          <td>${renderFormasiRuangan(rekap.formasi)}</td>
           <td class="text-center">
             <span class="badge ${jmlWawancara ? 'bg-primary-subtle text-primary border border-primary-subtle' : 'bg-light text-muted border'}">${jmlWawancara}</span>
           </td>
