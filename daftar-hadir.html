@@ -61,11 +61,6 @@
       border-bottom-color: #fff;
     }
 
-    .kolom-ttd {
-      min-width: 160px;
-      height: 46px;
-    }
-
     .print-title {
       display: none;
     }
@@ -153,7 +148,7 @@
                     <th style="width: 9%;">Kode Peserta</th>
                     <th style="width: 15%;" class="text-start">Nama Peserta</th>
                     <th style="width: 13%;" class="text-start">Formasi</th>
-                    <th style="width: 17%;">Tanda Tangan</th>
+                    <th style="width: 17%;" class="no-print">Cetak</th>
                   </tr>
                 </thead>
                 <tbody id="tbodyHadirWawancara">
@@ -179,7 +174,7 @@
                     <th style="width: 9%;">Kode Peserta</th>
                     <th style="width: 15%;" class="text-start">Nama Peserta</th>
                     <th style="width: 13%;" class="text-start">Formasi</th>
-                    <th style="width: 17%;">Tanda Tangan</th>
+                    <th style="width: 17%;" class="no-print">Cetak</th>
                   </tr>
                 </thead>
                 <tbody id="tbodyHadirPraktik">
@@ -212,6 +207,7 @@
 
   <script>
     let pesertaData = [];
+    let grupCetak = { Wawancara: [], 'Praktik Mengajar': [] };
 
     $(document).ready(async function() {
       if (!window.db) return;
@@ -221,6 +217,11 @@
 
       $('#filterFakultas').on('change', renderSemua);
       $('#inputSearch').on('keyup', renderSemua);
+
+      // Cetak lembar hadir per ruangan (lengkap dengan kolom tanda tangan asli untuk ditandatangani)
+      $(document).on('click', '.btn-cetak-ruangan', function() {
+        cetakDaftarHadirRuangan($(this).data('jenis'), $(this).data('index'));
+      });
 
       // Update judul cetak & tab aktif untuk print sesuai tab yang sedang dibuka
       $('#sesiTab button').on('shown.bs.tab', function(e) {
@@ -302,10 +303,11 @@
         if (!b.ruangan) return -1;
         return a.ruangan.kode.localeCompare(b.ruangan.kode);
       });
+      grupCetak[jenis] = grupTerurut;
 
       let html = '';
       let no = 1;
-      grupTerurut.forEach(grup => {
+      grupTerurut.forEach((grup, grupIndex) => {
         const jumlah = grup.peserta.length;
         const identitasCells = grup.ruangan ? `
           <td class="text-center" rowspan="${jumlah}">${no++}</td>
@@ -318,6 +320,11 @@
         `;
         const jumlahCell = `<td class="text-center" rowspan="${jumlah}"><span class="badge bg-primary-subtle text-primary border border-primary-subtle">${jumlah}</span></td>`;
         const jumlahPengujiCell = `<td class="text-center" rowspan="${jumlah}"><span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">${grup.penguji.size}</span></td>`;
+        const cetakCell = `<td class="text-center no-print" rowspan="${jumlah}">
+          <button class="btn btn-sm btn-outline-primary border-0 btn-cetak-ruangan" data-jenis="${jenis}" data-index="${grupIndex}" title="Cetak Daftar Hadir Ruangan Ini">
+            <i class="fa-solid fa-print"></i>
+          </button>
+        </td>`;
 
         grup.peserta.forEach((p, idx) => {
           html += `<tr>
@@ -325,7 +332,7 @@
             <td class="text-center fw-bold text-primary">${escapeHtml(p.kode_peserta)}</td>
             <td class="fw-semibold text-dark">${escapeHtml(p.nama)}</td>
             <td>${escapeHtml(p.formasi_jabatan)}</td>
-            <td class="kolom-ttd"></td>
+            ${idx === 0 ? cetakCell : ''}
           </tr>`;
         });
       });
@@ -339,6 +346,65 @@
           <td colspan="4"></td>
         </tr>
       `;
+    }
+
+    // Buka jendela cetak khusus untuk satu ruangan, lengkap dengan kolom tanda tangan asli untuk ditandatangani
+    function cetakDaftarHadirRuangan(jenis, index) {
+      const grup = grupCetak[jenis][index];
+      if (!grup) return;
+
+      const namaRuangan = grup.ruangan
+        ? `${grup.ruangan.nama_ruangan}${grup.ruangan.gedung ? ' - ' + grup.ruangan.gedung : ''} (${grup.ruangan.kode})`
+        : 'Ruangan Belum Ditentukan';
+
+      const barisPeserta = grup.peserta.map((p, i) => `
+        <tr>
+          <td style="text-align:center;">${i + 1}</td>
+          <td style="text-align:center;">${escapeHtml(p.kode_peserta)}</td>
+          <td>${escapeHtml(p.nama)}</td>
+          <td>${escapeHtml(p.formasi_jabatan)}</td>
+          <td></td>
+        </tr>
+      `).join('');
+
+      const html = `<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <title>Daftar Hadir - ${escapeHtml(namaRuangan)}</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 24px; color: #000; }
+    h3, p { text-align: center; margin: 2px 0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 18px; }
+    th, td { border: 1px solid #333; padding: 6px 8px; font-size: 13px; }
+    th { background: #f0f0f0; }
+    td:last-child { height: 46px; min-width: 140px; }
+  </style>
+</head>
+<body>
+  <h3>DAFTAR HADIR PESERTA SELEKSI DOSEN / TENAGA KEPENDIDIKAN UM</h3>
+  <p>Sesi ${escapeHtml(jenis)} &mdash; ${escapeHtml(namaRuangan)}</p>
+  <table>
+    <thead>
+      <tr>
+        <th style="width:5%;">No</th>
+        <th style="width:15%;">Kode Peserta</th>
+        <th style="width:25%;">Nama Peserta</th>
+        <th style="width:25%;">Formasi</th>
+        <th style="width:30%;">Tanda Tangan</th>
+      </tr>
+    </thead>
+    <tbody>${barisPeserta}</tbody>
+  </table>
+</body>
+</html>`;
+
+      const win = window.open('', '_blank', 'width=900,height=700');
+      if (!win) { alert('Popup diblokir browser. Izinkan popup untuk halaman ini agar bisa mencetak.'); return; }
+      win.document.open();
+      win.document.write(html);
+      win.document.close();
+      win.onload = () => { win.focus(); win.print(); };
     }
   </script>
 </body>
