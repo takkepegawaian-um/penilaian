@@ -145,18 +145,20 @@
                 <thead class="table-light text-center">
                   <tr>
                     <th style="width: 3%;">No</th>
-                    <th style="width: 9%;">Kode Ruangan</th>
-                    <th style="width: 14%;">Nama Ruangan</th>
-                    <th style="width: 11%;">Gedung</th>
-                    <th style="width: 10%;">Kode Peserta</th>
-                    <th style="width: 17%;" class="text-start">Nama Peserta</th>
-                    <th style="width: 16%;" class="text-start">Formasi</th>
-                    <th style="width: 20%;">Tanda Tangan</th>
+                    <th style="width: 8%;">Kode Ruangan</th>
+                    <th style="width: 13%;">Nama Ruangan</th>
+                    <th style="width: 10%;">Gedung</th>
+                    <th style="width: 7%;">Jumlah Peserta</th>
+                    <th style="width: 9%;">Kode Peserta</th>
+                    <th style="width: 16%;" class="text-start">Nama Peserta</th>
+                    <th style="width: 15%;" class="text-start">Formasi</th>
+                    <th style="width: 19%;">Tanda Tangan</th>
                   </tr>
                 </thead>
                 <tbody id="tbodyHadirWawancara">
-                  <tr><td colspan="8" class="text-center text-muted py-4">Memuat data...</td></tr>
+                  <tr><td colspan="9" class="text-center text-muted py-4">Memuat data...</td></tr>
                 </tbody>
+                <tfoot id="tfootHadirWawancara"></tfoot>
               </table>
             </div>
           </div>
@@ -168,18 +170,20 @@
                 <thead class="table-light text-center">
                   <tr>
                     <th style="width: 3%;">No</th>
-                    <th style="width: 9%;">Kode Ruangan</th>
-                    <th style="width: 14%;">Nama Ruangan</th>
-                    <th style="width: 11%;">Gedung</th>
-                    <th style="width: 10%;">Kode Peserta</th>
-                    <th style="width: 17%;" class="text-start">Nama Peserta</th>
-                    <th style="width: 16%;" class="text-start">Formasi</th>
-                    <th style="width: 20%;">Tanda Tangan</th>
+                    <th style="width: 8%;">Kode Ruangan</th>
+                    <th style="width: 13%;">Nama Ruangan</th>
+                    <th style="width: 10%;">Gedung</th>
+                    <th style="width: 7%;">Jumlah Peserta</th>
+                    <th style="width: 9%;">Kode Peserta</th>
+                    <th style="width: 16%;" class="text-start">Nama Peserta</th>
+                    <th style="width: 15%;" class="text-start">Formasi</th>
+                    <th style="width: 19%;">Tanda Tangan</th>
                   </tr>
                 </thead>
                 <tbody id="tbodyHadirPraktik">
-                  <tr><td colspan="8" class="text-center text-muted py-4">Memuat data...</td></tr>
+                  <tr><td colspan="9" class="text-center text-muted py-4">Memuat data...</td></tr>
                 </tbody>
+                <tfoot id="tfootHadirPraktik"></tfoot>
               </table>
             </div>
           </div>
@@ -260,15 +264,17 @@
         return true;
       });
 
-      renderTabel('tbodyHadirWawancara', filtered, 'Wawancara');
-      renderTabel('tbodyHadirPraktik', filtered, 'Praktik Mengajar');
+      renderTabel('tbodyHadirWawancara', 'tfootHadirWawancara', filtered, 'Wawancara');
+      renderTabel('tbodyHadirPraktik', 'tfootHadirPraktik', filtered, 'Praktik Mengajar');
     }
 
-    // Kelompokkan peserta per ruangan (mirip Data Master Ruangan), tanpa kolom Aksi
-    function renderTabel(tbodyId, rows, jenis) {
+    // Kelompokkan peserta per ruangan (mirip Data Master Ruangan), tanpa kolom Aksi, dilengkapi jumlah per ruangan & total keseluruhan
+    function renderTabel(tbodyId, tfootId, rows, jenis) {
       const tbody = document.getElementById(tbodyId);
+      const tfoot = document.getElementById(tfootId);
       if (!rows.length) {
-        tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-4">Belum ada data peserta.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted py-4">Belum ada data peserta.</td></tr>';
+        tfoot.innerHTML = '';
         return;
       }
 
@@ -299,10 +305,11 @@
           <td class="text-center" rowspan="${jumlah}">${no++}</td>
           <td class="text-center text-muted" rowspan="${jumlah}" colspan="3">- Ruangan Belum Ditentukan -</td>
         `;
+        const jumlahCell = `<td class="text-center" rowspan="${jumlah}"><span class="badge bg-primary-subtle text-primary border border-primary-subtle">${jumlah}</span></td>`;
 
         grup.peserta.forEach((p, idx) => {
           html += `<tr>
-            ${idx === 0 ? identitasCells : ''}
+            ${idx === 0 ? identitasCells + jumlahCell : ''}
             <td class="text-center fw-bold text-primary">${escapeHtml(p.kode_peserta)}</td>
             <td class="fw-semibold text-dark">${escapeHtml(p.nama)}</td>
             <td>${escapeHtml(p.formasi_jabatan)}</td>
@@ -312,6 +319,13 @@
       });
 
       tbody.innerHTML = html;
+      tfoot.innerHTML = `
+        <tr class="table-light fw-bold">
+          <td colspan="4" class="text-end">Total Keseluruhan Peserta</td>
+          <td class="text-center"><span class="badge bg-primary-subtle text-primary border border-primary-subtle">${rows.length}</span></td>
+          <td colspan="4"></td>
+        </tr>
+      `;
     }
   </script>
 </body>
