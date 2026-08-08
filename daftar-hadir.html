@@ -117,6 +117,26 @@
           </div>
         </div>
 
+        <!-- Info Cetak Daftar Hadir -->
+        <div class="d-flex align-items-end gap-2 flex-wrap mb-3 no-print p-2 bg-light rounded-3 border">
+          <div>
+            <label for="inputTanggalHadir" class="form-label small fw-semibold mb-1">Tanggal</label>
+            <input type="date" id="inputTanggalHadir" class="form-control form-control-sm">
+          </div>
+          <div>
+            <label for="inputJamMulai" class="form-label small fw-semibold mb-1">Jam Mulai</label>
+            <input type="time" id="inputJamMulai" class="form-control form-control-sm">
+          </div>
+          <div>
+            <label for="inputJamSelesai" class="form-label small fw-semibold mb-1">Jam Selesai</label>
+            <input type="time" id="inputJamSelesai" class="form-control form-control-sm">
+          </div>
+          <div class="flex-grow-1" style="min-width: 240px;">
+            <label for="inputAcara" class="form-label small fw-semibold mb-1">Acara</label>
+            <input type="text" id="inputAcara" class="form-control form-control-sm" placeholder="Contoh: Seleksi Wawancara Penerimaan Dosen Tetap UM Tahun 2026">
+          </div>
+        </div>
+
         <!-- TAB SESI -->
         <ul class="nav nav-tabs mb-3 no-print" id="sesiTab" role="tablist">
           <li class="nav-item" role="presentation">
@@ -209,8 +229,27 @@
     let pesertaData = [];
     let grupCetak = { Wawancara: [], 'Praktik Mengajar': [] };
 
+    const NAMA_HARI = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', "Jum'at", 'Sabtu'];
+    const NAMA_BULAN = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+
+    function formatTanggalIndonesia(isoDate) {
+      if (!isoDate) return '-';
+      const [y, m, d] = isoDate.split('-').map(Number);
+      return `${d} ${NAMA_BULAN[m - 1]} ${y}`;
+    }
+
+    function namaHariIndonesia(isoDate) {
+      if (!isoDate) return '-';
+      const [y, m, d] = isoDate.split('-').map(Number);
+      return NAMA_HARI[new Date(y, m - 1, d).getDay()];
+    }
+
     $(document).ready(async function() {
       if (!window.db) return;
+
+      const today = new Date();
+      const isoToday = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+      $('#inputTanggalHadir').val(isoToday);
 
       await loadFakultasFilter();
       await loadDaftarHadir();
@@ -354,22 +393,75 @@
       `;
     }
 
-    // Buka jendela cetak khusus untuk satu ruangan, lengkap dengan kolom tanda tangan asli untuk ditandatangani
+    function namaTempatRuangan(grup) {
+      return grup.ruangan
+        ? `${grup.ruangan.nama_ruangan}${grup.ruangan.gedung ? ' - ' + grup.ruangan.gedung : ''}`
+        : 'Ruangan Belum Ditentukan';
+    }
+
+    // Kop surat resmi UM (logo + kementerian + alamat), sesuai template DH Peserta.pdf
+    function bangunKopSurat() {
+      return `
+      <div style="display:flex; align-items:center; gap:14px; border-bottom:3px solid #000; padding-bottom:8px; margin-bottom:20px;">
+        <img src="${location.origin}/assets/logo-um.png" style="width:68px; height:68px; flex-shrink:0;">
+        <div style="flex:1; text-align:center;">
+          <div style="font-weight:bold; font-size:14px; line-height:1.35;">KEMENTERIAN PENDIDIKAN TINGGI, SAINS DAN TEKNOLOGI</div>
+          <div style="font-weight:bold; font-size:14px;">UNIVERSITAS NEGERI MALANG (UM)</div>
+          <div style="font-size:11px; margin-top:2px;">Jalan Semarang 5, Malang 65145 Telpon: 0341-</div>
+          <div style="font-size:11px;">Telpon: 0341-551312, Faksimile: 0341-551921</div>
+          <div style="font-size:11px;">Laman: www.um.ac.id</div>
+        </div>
+      </div>`;
+    }
+
+    // Blok info Hari/Tanggal/Pukul/Tempat/Acara, diambil dari input form + data ruangan
+    function bangunInfoCetak(jenis, tempat) {
+      const tanggal = $('#inputTanggalHadir').val();
+      const jamMulai = $('#inputJamMulai').val();
+      const jamSelesai = $('#inputJamSelesai').val();
+      const acara = $('#inputAcara').val().trim() || `Seleksi ${jenis} Penerimaan Dosen / Tenaga Kependidikan UM`;
+      const pukul = jamMulai && jamSelesai ? `${jamMulai} - ${jamSelesai} WIB` : (jamMulai || jamSelesai || '-');
+
+      const baris = (label, isi) => `
+        <tr>
+          <td style="border:none; padding:2px 0; width:80px;">${label}</td>
+          <td style="border:none; padding:2px 0; width:14px;">:</td>
+          <td style="border:none; padding:2px 0;">${isi}</td>
+        </tr>`;
+
+      return `<table style="width:100%; border-collapse:collapse; margin-bottom:20px; font-size:13px;">
+        ${baris('Hari', escapeHtml(namaHariIndonesia(tanggal)))}
+        ${baris('Tanggal', escapeHtml(formatTanggalIndonesia(tanggal)))}
+        ${baris('Pukul', escapeHtml(pukul))}
+        ${baris('Tempat', escapeHtml(tempat))}
+        ${baris('Acara', escapeHtml(acara))}
+      </table>`;
+    }
+
+    // Blok tanda tangan pejabat penanggung jawab, sesuai template DH Peserta.pdf
+    function bangunFooterTtd() {
+      return `
+      <div style="margin-top:40px; text-align:right;">
+        <div>Kepala Seksi Tenaga Dosen</div>
+        <div style="height:70px;"></div>
+        <div>Waris Eka Ratnawati, S.TP., M.A.</div>
+        <div>NIP 198304232009102001</div>
+      </div>`;
+    }
+
+    // Buka jendela cetak khusus untuk satu ruangan, mengikuti format resmi DH Peserta.pdf
     function cetakDaftarHadirRuangan(jenis, index) {
       const grup = grupCetak[jenis][index];
       if (!grup) return;
 
-      const namaRuangan = grup.ruangan
-        ? `${grup.ruangan.nama_ruangan}${grup.ruangan.gedung ? ' - ' + grup.ruangan.gedung : ''} (${grup.ruangan.kode})`
-        : 'Ruangan Belum Ditentukan';
+      const tempat = namaTempatRuangan(grup);
 
       const barisPeserta = grup.peserta.map((p, i) => `
         <tr>
-          <td style="text-align:center;">${i + 1}</td>
-          <td style="text-align:center;">${escapeHtml(p.kode_peserta)}</td>
-          <td>${escapeHtml(p.nama)}</td>
-          <td>${escapeHtml(p.formasi_jabatan)}</td>
-          <td></td>
+          <td style="text-align:center; width:6%;">${i + 1}</td>
+          <td style="width:44%;">${escapeHtml(p.nama)}</td>
+          <td style="text-align:center; width:20%;">Peserta</td>
+          <td style="width:30%;"></td>
         </tr>
       `).join('');
 
@@ -377,31 +469,23 @@
 <html lang="id">
 <head>
   <meta charset="utf-8">
-  <title>Daftar Hadir - ${escapeHtml(namaRuangan)}</title>
+  <title>Daftar Hadir Peserta - ${escapeHtml(tempat)}</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 24px; color: #000; }
-    h3, p { text-align: center; margin: 2px 0; }
-    table { width: 100%; border-collapse: collapse; margin-top: 18px; }
-    th, td { border: 1px solid #333; padding: 6px 8px; font-size: 13px; }
-    th { background: #f0f0f0; }
-    td:last-child { height: 46px; min-width: 140px; }
+    body { font-family: 'Times New Roman', Times, serif; padding: 30px 40px; color: #000; font-size: 13px; }
+    table.tabel-hadir { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    table.tabel-hadir th, table.tabel-hadir td { border: 1px solid #000; padding: 6px 8px; }
+    table.tabel-hadir th { text-align: center; }
+    table.tabel-hadir td:last-child { height: 34px; }
   </style>
 </head>
 <body>
-  <h3>DAFTAR HADIR PESERTA SELEKSI DOSEN / TENAGA KEPENDIDIKAN UM</h3>
-  <p>Sesi ${escapeHtml(jenis)} &mdash; ${escapeHtml(namaRuangan)}</p>
-  <table>
-    <thead>
-      <tr>
-        <th style="width:5%;">No</th>
-        <th style="width:15%;">Kode Peserta</th>
-        <th style="width:25%;">Nama Peserta</th>
-        <th style="width:25%;">Formasi</th>
-        <th style="width:30%;">Tanda Tangan</th>
-      </tr>
-    </thead>
+  ${bangunKopSurat()}
+  ${bangunInfoCetak(jenis, tempat)}
+  <table class="tabel-hadir">
+    <thead><tr><th>No</th><th>Nama</th><th>Jabatan</th><th>Tanda Tangan</th></tr></thead>
     <tbody>${barisPeserta}</tbody>
   </table>
+  ${bangunFooterTtd()}
 </body>
 </html>`;
 
@@ -413,19 +497,16 @@
       const grup = grupCetak[jenis][index];
       if (!grup) return;
 
-      const namaRuangan = grup.ruangan
-        ? `${grup.ruangan.nama_ruangan}${grup.ruangan.gedung ? ' - ' + grup.ruangan.gedung : ''} (${grup.ruangan.kode})`
-        : 'Ruangan Belum Ditentukan';
+      const tempat = namaTempatRuangan(grup);
       const labelPeran = jenis === 'Wawancara' ? 'Pewawancara' : 'Penilai Praktik Mengajar';
       const daftarPenguji = Array.from(grup.penguji.values());
 
       const barisPenguji = daftarPenguji.map((pg, i) => `
         <tr>
-          <td style="text-align:center;">${i + 1}</td>
-          <td style="text-align:center;">${escapeHtml(pg.nip)}</td>
-          <td>${escapeHtml(pg.nama)}</td>
-          <td>${escapeHtml(labelPeran)}</td>
-          <td></td>
+          <td style="text-align:center; width:6%;">${i + 1}</td>
+          <td style="width:44%;">${escapeHtml(pg.nama)}<br><small>NIP. ${escapeHtml(pg.nip)}</small></td>
+          <td style="text-align:center; width:20%;">${escapeHtml(labelPeran)}</td>
+          <td style="width:30%;"></td>
         </tr>
       `).join('');
 
@@ -433,31 +514,23 @@
 <html lang="id">
 <head>
   <meta charset="utf-8">
-  <title>Daftar Hadir Penguji - ${escapeHtml(namaRuangan)}</title>
+  <title>Daftar Hadir Penguji - ${escapeHtml(tempat)}</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 24px; color: #000; }
-    h3, p { text-align: center; margin: 2px 0; }
-    table { width: 100%; border-collapse: collapse; margin-top: 18px; }
-    th, td { border: 1px solid #333; padding: 6px 8px; font-size: 13px; }
-    th { background: #f0f0f0; }
-    td:last-child { height: 46px; min-width: 140px; }
+    body { font-family: 'Times New Roman', Times, serif; padding: 30px 40px; color: #000; font-size: 13px; }
+    table.tabel-hadir { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    table.tabel-hadir th, table.tabel-hadir td { border: 1px solid #000; padding: 6px 8px; }
+    table.tabel-hadir th { text-align: center; }
+    table.tabel-hadir td:last-child { height: 34px; }
   </style>
 </head>
 <body>
-  <h3>DAFTAR HADIR DOSEN PENGUJI SELEKSI DOSEN / TENAGA KEPENDIDIKAN UM</h3>
-  <p>Sesi ${escapeHtml(jenis)} &mdash; ${escapeHtml(namaRuangan)}</p>
-  <table>
-    <thead>
-      <tr>
-        <th style="width:5%;">No</th>
-        <th style="width:20%;">NIP</th>
-        <th style="width:30%;">Nama Dosen Penguji</th>
-        <th style="width:20%;">Peran</th>
-        <th style="width:25%;">Tanda Tangan</th>
-      </tr>
-    </thead>
-    <tbody>${barisPenguji || '<tr><td colspan="5" style="text-align:center;">Belum ada penguji yang ditugaskan.</td></tr>'}</tbody>
+  ${bangunKopSurat()}
+  ${bangunInfoCetak(jenis, tempat)}
+  <table class="tabel-hadir">
+    <thead><tr><th>No</th><th>Nama</th><th>Jabatan</th><th>Tanda Tangan</th></tr></thead>
+    <tbody>${barisPenguji || '<tr><td colspan="4" style="text-align:center;">Belum ada penguji yang ditugaskan.</td></tr>'}</tbody>
   </table>
+  ${bangunFooterTtd()}
 </body>
 </html>`;
 
