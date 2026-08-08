@@ -480,7 +480,7 @@
           <td style="text-align:center; width:6%;">${i + 1}</td>
           <td style="width:44%;">${escapeHtml(p.nama)}</td>
           <td style="text-align:center; width:20%;">Peserta</td>
-          <td style="width:30%;">${i + 1}.</td>
+          <td style="width:30%; text-align:${(i + 1) % 2 === 0 ? 'center' : 'left'};">${i + 1}.</td>
         </tr>
       `).join('');
 
@@ -525,7 +525,7 @@
           <td style="text-align:center; width:6%;">${i + 1}</td>
           <td style="width:44%;">${escapeHtml(pg.nama)}<br><small>NIP. ${escapeHtml(pg.nip)}</small></td>
           <td style="text-align:center; width:20%;">${escapeHtml(labelPeran)}</td>
-          <td style="width:30%;">${i + 1}.</td>
+          <td style="width:30%; text-align:${(i + 1) % 2 === 0 ? 'center' : 'left'};">${i + 1}.</td>
         </tr>
       `).join('');
 
