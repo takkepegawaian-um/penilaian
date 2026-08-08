@@ -135,6 +135,19 @@
             <label for="inputAcara" class="form-label small fw-semibold mb-1">Acara</label>
             <input type="text" id="inputAcara" class="form-control form-control-sm" placeholder="Contoh: Seleksi Wawancara Penerimaan Dosen Tetap UM Tahun 2026">
           </div>
+          <div class="w-100"></div>
+          <div class="flex-grow-1" style="min-width: 200px;">
+            <label for="inputJabatanTtd" class="form-label small fw-semibold mb-1">Jabatan Penanda Tangan</label>
+            <input type="text" id="inputJabatanTtd" class="form-control form-control-sm" value="Kepala Seksi Tenaga Dosen">
+          </div>
+          <div class="flex-grow-1" style="min-width: 220px;">
+            <label for="inputNamaTtd" class="form-label small fw-semibold mb-1">Nama Penanda Tangan</label>
+            <input type="text" id="inputNamaTtd" class="form-control form-control-sm" value="Waris Eka Ratnawati, S.TP., M.A.">
+          </div>
+          <div style="width: 200px;">
+            <label for="inputNipTtd" class="form-label small fw-semibold mb-1">NIP Penanda Tangan</label>
+            <input type="text" id="inputNipTtd" class="form-control form-control-sm" value="198304232009102001">
+          </div>
         </div>
 
         <!-- TAB SESI -->
@@ -443,12 +456,15 @@
 
     // Blok tanda tangan pejabat penanggung jawab, sesuai template DH Peserta.pdf
     function bangunFooterTtd() {
+      const jabatan = $('#inputJabatanTtd').val().trim() || 'Kepala Seksi Tenaga Dosen';
+      const nama = $('#inputNamaTtd').val().trim() || '-';
+      const nip = $('#inputNipTtd').val().trim();
       return `
       <div style="margin-top:40px; text-align:right;">
-        <div>Kepala Seksi Tenaga Dosen</div>
+        <div>${escapeHtml(jabatan)}</div>
         <div style="height:70px;"></div>
-        <div>Waris Eka Ratnawati, S.TP., M.A.</div>
-        <div>NIP 198304232009102001</div>
+        <div>${escapeHtml(nama)}</div>
+        <div>${nip ? 'NIP ' + escapeHtml(nip) : ''}</div>
       </div>`;
     }
 
