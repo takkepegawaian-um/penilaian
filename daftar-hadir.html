@@ -144,16 +144,18 @@
               <table class="table table-bordered align-middle small mb-0" id="tableHadirWawancara">
                 <thead class="table-light text-center">
                   <tr>
-                    <th style="width: 4%;">No</th>
-                    <th style="width: 12%;">Kode Peserta</th>
-                    <th style="width: 22%;" class="text-start">Nama Peserta</th>
-                    <th style="width: 18%;" class="text-start">Formasi</th>
-                    <th style="width: 20%;">Ruangan</th>
-                    <th style="width: 24%;">Tanda Tangan</th>
+                    <th style="width: 3%;">No</th>
+                    <th style="width: 9%;">Kode Ruangan</th>
+                    <th style="width: 14%;">Nama Ruangan</th>
+                    <th style="width: 11%;">Gedung</th>
+                    <th style="width: 10%;">Kode Peserta</th>
+                    <th style="width: 17%;" class="text-start">Nama Peserta</th>
+                    <th style="width: 16%;" class="text-start">Formasi</th>
+                    <th style="width: 20%;">Tanda Tangan</th>
                   </tr>
                 </thead>
                 <tbody id="tbodyHadirWawancara">
-                  <tr><td colspan="6" class="text-center text-muted py-4">Memuat data...</td></tr>
+                  <tr><td colspan="8" class="text-center text-muted py-4">Memuat data...</td></tr>
                 </tbody>
               </table>
             </div>
@@ -165,16 +167,18 @@
               <table class="table table-bordered align-middle small mb-0" id="tableHadirPraktik">
                 <thead class="table-light text-center">
                   <tr>
-                    <th style="width: 4%;">No</th>
-                    <th style="width: 12%;">Kode Peserta</th>
-                    <th style="width: 22%;" class="text-start">Nama Peserta</th>
-                    <th style="width: 18%;" class="text-start">Formasi</th>
-                    <th style="width: 20%;">Ruangan</th>
-                    <th style="width: 24%;">Tanda Tangan</th>
+                    <th style="width: 3%;">No</th>
+                    <th style="width: 9%;">Kode Ruangan</th>
+                    <th style="width: 14%;">Nama Ruangan</th>
+                    <th style="width: 11%;">Gedung</th>
+                    <th style="width: 10%;">Kode Peserta</th>
+                    <th style="width: 17%;" class="text-start">Nama Peserta</th>
+                    <th style="width: 16%;" class="text-start">Formasi</th>
+                    <th style="width: 20%;">Tanda Tangan</th>
                   </tr>
                 </thead>
                 <tbody id="tbodyHadirPraktik">
-                  <tr><td colspan="6" class="text-center text-muted py-4">Memuat data...</td></tr>
+                  <tr><td colspan="8" class="text-center text-muted py-4">Memuat data...</td></tr>
                 </tbody>
               </table>
             </div>
@@ -232,7 +236,7 @@
     async function loadDaftarHadir() {
       const { data, error } = await db
         .from('peserta')
-        .select('id, kode_peserta, nama, formasi_jabatan, fakultas_id, penugasan(urutan, jenis_sesi, ruangan(nama_ruangan, gedung))')
+        .select('id, kode_peserta, nama, formasi_jabatan, fakultas_id, penugasan(urutan, jenis_sesi, ruangan(id, kode, nama_ruangan, gedung))')
         .order('kode_peserta');
 
       if (error) { showDbError('memuat data hadir peserta', error); return; }
@@ -243,8 +247,7 @@
     function cariRuangan(penugasan, jenis) {
       const sesi = penugasan.filter(p => p.jenis_sesi === jenis);
       const pu = sesi.find(p => p.urutan === 1) || sesi.find(p => p.urutan === 2);
-      if (!pu || !pu.ruangan) return '-';
-      return [pu.ruangan.nama_ruangan, pu.ruangan.gedung].filter(Boolean).join(' - ');
+      return (pu && pu.ruangan) || null;
     }
 
     function renderSemua() {
@@ -261,22 +264,54 @@
       renderTabel('tbodyHadirPraktik', filtered, 'Praktik Mengajar');
     }
 
+    // Kelompokkan peserta per ruangan (mirip Data Master Ruangan), tanpa kolom Aksi
     function renderTabel(tbodyId, rows, jenis) {
       const tbody = document.getElementById(tbodyId);
       if (!rows.length) {
-        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">Belum ada data peserta.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-4">Belum ada data peserta.</td></tr>';
         return;
       }
-      tbody.innerHTML = rows.map((r, i) => `
-        <tr>
-          <td class="text-center">${i + 1}</td>
-          <td class="text-center fw-bold text-primary">${escapeHtml(r.kode_peserta)}</td>
-          <td class="fw-semibold text-dark">${escapeHtml(r.nama)}</td>
-          <td>${escapeHtml(r.formasi_jabatan)}</td>
-          <td class="text-center">${escapeHtml(cariRuangan(r.penugasan, jenis))}</td>
-          <td class="kolom-ttd"></td>
-        </tr>
-      `).join('');
+
+      const kelompok = {}; // { [ruanganKey]: { ruangan, peserta: [] } }
+      rows.forEach(r => {
+        const ruangan = cariRuangan(r.penugasan, jenis);
+        const key = ruangan ? ruangan.id : 'belum-ditentukan';
+        if (!kelompok[key]) kelompok[key] = { ruangan, peserta: [] };
+        kelompok[key].peserta.push(r);
+      });
+
+      const grupTerurut = Object.values(kelompok).sort((a, b) => {
+        if (!a.ruangan) return 1;
+        if (!b.ruangan) return -1;
+        return a.ruangan.kode.localeCompare(b.ruangan.kode);
+      });
+
+      let html = '';
+      let no = 1;
+      grupTerurut.forEach(grup => {
+        const jumlah = grup.peserta.length;
+        const identitasCells = grup.ruangan ? `
+          <td class="text-center" rowspan="${jumlah}">${no++}</td>
+          <td class="text-center fw-bold text-primary" rowspan="${jumlah}">${escapeHtml(grup.ruangan.kode)}</td>
+          <td class="fw-semibold text-dark" rowspan="${jumlah}">${escapeHtml(grup.ruangan.nama_ruangan)}</td>
+          <td rowspan="${jumlah}">${escapeHtml(grup.ruangan.gedung || '-')}</td>
+        ` : `
+          <td class="text-center" rowspan="${jumlah}">${no++}</td>
+          <td class="text-center text-muted" rowspan="${jumlah}" colspan="3">- Ruangan Belum Ditentukan -</td>
+        `;
+
+        grup.peserta.forEach((p, idx) => {
+          html += `<tr>
+            ${idx === 0 ? identitasCells : ''}
+            <td class="text-center fw-bold text-primary">${escapeHtml(p.kode_peserta)}</td>
+            <td class="fw-semibold text-dark">${escapeHtml(p.nama)}</td>
+            <td>${escapeHtml(p.formasi_jabatan)}</td>
+            <td class="kolom-ttd"></td>
+          </tr>`;
+        });
+      });
+
+      tbody.innerHTML = html;
     }
   </script>
 </body>
