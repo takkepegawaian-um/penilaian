@@ -400,14 +400,17 @@
     }
 
     // Kop surat resmi UM (logo + kementerian + alamat), sesuai template DH Peserta.pdf
+    // Logo diposisikan mengambang di pojok kiri atas; teks kop DIPUSATKAN pada lebar halaman penuh
+    // (bukan pada sisa ruang di samping logo) — persis seperti tata letak template aslinya.
     function bangunKopSurat() {
       return `
-      <div style="display:flex; align-items:center; gap:14px; border-bottom:3px solid #000; padding-bottom:8px; margin-bottom:20px;">
-        <img src="${location.origin}/assets/logo-um.png" style="width:68px; height:68px; flex-shrink:0;">
-        <div style="flex:1; text-align:center;">
-          <div style="font-weight:bold; font-size:14px; line-height:1.35;">KEMENTERIAN PENDIDIKAN TINGGI, SAINS DAN TEKNOLOGI</div>
-          <div style="font-weight:bold; font-size:14px;">UNIVERSITAS NEGERI MALANG (UM)</div>
-          <div style="font-size:11px; margin-top:2px;">Jalan Semarang 5, Malang 65145 Telpon: 0341-</div>
+      <div style="position:relative; min-height:86px; border-bottom:3px solid #000; padding-bottom:8px; margin-bottom:20px;">
+        <img src="${location.origin}/assets/logo-um.png" style="position:absolute; left:0; top:0; width:84px; height:84px;">
+        <div style="text-align:center; padding-top:2px;">
+          <div style="font-size:14px; line-height:1.35;">KEMENTERIAN PENDIDIKAN TINGGI, SAINS</div>
+          <div style="font-size:14px; line-height:1.35;">DAN TEKNOLOGI</div>
+          <div style="font-weight:bold; font-size:14px; margin-top:2px;">UNIVERSITAS NEGERI MALANG (UM)</div>
+          <div style="font-size:11px; margin-top:4px;">Jalan Semarang 5, Malang 65145 Telpon: 0341-</div>
           <div style="font-size:11px;">Telpon: 0341-551312, Faksimile: 0341-551921</div>
           <div style="font-size:11px;">Laman: www.um.ac.id</div>
         </div>
